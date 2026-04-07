@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab. Virtual Álvarez — CETIS 43-DGETI 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --sidebar: #0b1220;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59,130,246,0.3);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --white: #ffffff;
+    --slate100: #f1f5f9;
+    --slate200: #e2e8f0;
+    --slate400: #94a3b8;
+    --slate500: #64748b;
+    --slate600: #475569;
+    --slate700: #334155;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
+    --shadow-md: 0 4px 20px rgba(0,0,0,.4);
+    --shadow-glow: 0 0 40px var(--accent-glow);
+  }
+  
+  html, body { height: 100%; font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--slate100); overflow: hidden; }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  aside {
+    width: 280px; flex-shrink: 0;
+    background: var(--sidebar);
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--surface);
+    z-index: 30;
+  }
+  .sidebar-header { 
+    padding: 1.5rem; 
+    background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+    position: relative; overflow: hidden;
+  }
+  .sidebar-header::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .logo-badge { 
+    font-size: .65rem; font-weight: 900; letter-spacing: .2em; 
+    color: rgba(255,255,255,0.8); text-transform: uppercase;
+    position: relative; z-index: 1;
+  }
+  .logo-title { 
+    font-size: 1.5rem; font-weight: 900; 
+    color: white; margin-top: .25rem;
+    position: relative; z-index: 1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .student-progress {
+    padding: 1rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--slate700);
+  }
+  .progress-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .7rem; color: var(--slate400); margin-bottom: .5rem;
+  }
+  .progress-bar-bg {
+    height: 6px; background: var(--slate700); border-radius: 99px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; width: 35%; 
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    border-radius: 99px; transition: width 0.5s ease;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+  .xp-badge {
+    display: inline-flex; align-items: center; gap: .25rem;
+    font-size: .75rem; font-weight: 700; color: var(--warning);
+    margin-top: .5rem;
+  }
+  nav { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; overflow-y: auto; }
+  .nav-btn {
+    display: flex; align-items: center; gap: .875rem;
+    padding: .875rem 1rem; border-radius: var(--radius-xl);
+    border: none; background: transparent; color: var(--slate400);
+    font-family: inherit; font-size: .85rem; font-weight: 600;
+    cursor: pointer; transition: all .2s; text-align: left; width: 100%;
+    position: relative; overflow: hidden;
+  }
+  .nav-btn::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent); transform: scaleY(0); transition: transform 0.2s;
+  }
+  .nav-btn:hover { 
+    background: var(--surface); color: var(--slate200); 
+    transform: translateX(4px);
+  }
+  .nav-btn:hover::before { transform: scaleY(1); }
+  .nav-btn.active { 
+    background: var(--surface); color: var(--accent); 
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-btn.active::before { transform: scaleY(1); }
+  .nav-btn svg { flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto; font-size: .65rem; padding: .2rem .5rem;
+    background: var(--danger); color: white; border-radius: 99px;
+    font-weight: 700;
+  }
+  .sidebar-footer { 
+    padding: 1rem; border-top: 1px solid var(--surface);
+    text-align: center; font-size: .65rem; 
+    color: var(--slate500);
+  }
+
+  /* ── MAIN ── */
+  main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--slate700);
+    padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+    z-index: 20; flex-shrink: 0;
+  }
+  .header-title { 
+    font-size: 1.25rem; font-weight: 700; 
+    background: linear-gradient(90deg, var(--slate100), var(--slate400));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header-actions { display: flex; align-items: center; gap: 1rem; }
+  .notification-btn {
+    width: 2.5rem; height: 2.5rem; border-radius: var(--radius-xl);
+    background: var(--bg); border: 1px solid var(--slate700);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--slate400); position: relative;
+    transition: all 0.2s;
+  }
+  .notification-btn:hover { 
+    background: var(--accent); color: white; border-color: var(--accent);
+    box-shadow: var(--shadow-glow);
+  }
+  .notification-dot {
+    position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+    background: var(--danger); border-radius: 50%; animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .avatar-group { display: flex; align-items: center; gap: .75rem; }
+  .avatar { 
+    width: 2.5rem; height: 2.5rem; border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .875rem; border: 2px solid var(--surface);
+  }
+  .streak-counter {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .5rem 1rem; background: var(--bg);
+    border-radius: var(--radius-xl); border: 1px solid var(--slate700);
+    font-size: .875rem; font-weight: 600; color: var(--warning);
+  }
+
+  .content { flex: 1; overflow-y: auto; padding: 2rem; }
+  footer { 
+    background: var(--surface); border-top: 1px solid var(--slate700);
+    padding: 1rem; text-align: center; font-size: .75rem;
+    color: var(--slate500); flex-shrink: 0;
+  }
+
+  /* ── TABS ── */
+  .tab { display: none; animation: fadeIn 0.3s ease; }
+  .tab.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── DASHBOARD ── */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--slate700) 100%);
+    border-radius: var(--radius-3xl); padding: 2rem;
+    margin-bottom: 2rem; border: 1px solid var(--slate700);
+    position: relative; overflow: hidden;
+  }
+  .welcome-banner::after {
+    content: '🔬'; position: absolute; right: 2rem; top: 50%;
+    transform: translateY(-50%); font-size: 6rem; opacity: 0.1;
+  }
+  
+  /* ANIMACIÓN DE MANO SALUDANDO */
+  .welcome-text { 
+    font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .waving-hand {
+    display: inline-block;
+    font-size: 2rem;
+    animation: wave 2s ease-in-out infinite;
+    transform-origin: 70% 70%;
+  }
+  @keyframes wave {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+    60% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  .welcome-sub { color: var(--slate400); font-size: 1rem; }
+  
+  .quick-actions {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .action-card {
+    background: var(--surface); border: 1px solid var(--slate700);
+    border-radius: var(--radius-2xl); padding: 1.5rem;
+    cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .action-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(59,130,246,0.1) 100%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .action-card:hover {
+    transform: translateY(-4px); border-color: var(--accent);
+    box-shadow: var(--shadow-glow);
+  }
+  .action-card:hover::before { opacity: 1; }
+  .action-icon {
+    width: 3rem; height: 3rem; border-radius: var(--radius-xl);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem; font-size: 1.5rem;
+  }
+  .action-icon.blue { background: rgba(59,130,246,0.2); }
+  .action-icon.purple { background: rgba(139,92,246,0.2); }
+  .action-icon.pink { background: rgba(236,72,153,0.2); }
+  .action-title { font-weight: 700; margin-bottom: .25rem; }
+  .action-desc { font-size: .875rem; color: var(--slate400); }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-pill {
+    background: var(--surface); border: 1px solid var(--slate700);
+    border-radius: var(--radius-xl); padding: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .stat-icon-box {
+    width: 2.5rem; height: 2.5rem; border-radius: var(--radius-xl);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem;
+  }
+  .stat-info { flex: 1; }
+  .stat-label { font-size: .75rem; color: var(--slate400); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-value { font-size: 1.25rem; font-weight: 700; }
+
+  /* ── SIMULADOR INTERACTIVO ── */
+  .simulator-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .simulator-stage {
+    background: var(--surface); border-radius: var(--radius-3xl);
+    padding: 2rem; border: 1px solid var(--slate700);
+    position: relative;
+  }
+  .stage-title {
+    font-size: .875rem; font-weight: 700; color: var(--slate400);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 1.5rem; display: flex; align-items: center; gap: .5rem;
+  }
+  .urine-sample {
+    width: 120px; height: 160px; margin: 0 auto 2rem;
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+    border-radius: 0 0 60px 60px; position: relative;
+    border: 4px solid var(--slate600); border-top: none;
+    box-shadow: inset 0 -20px 40px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.5s ease;
+  }
+  .urine-sample::before {
+    content: ''; position: absolute; top: -10px; left: 50%;
+    transform: translateX(-50%); width: 40px; height: 10px;
+    background: var(--slate600); border-radius: 5px;
+  }
+  .urine-foam {
+    position: absolute; top: 10px; left: 10px; right: 10px;
+    height: 30px; background: rgba(255,255,255,0.4);
+    border-radius: 50%; opacity: 0; transition: opacity 0.5s;
+  }
+  .test-strip {
+    width: 200px; height: 30px; margin: 0 auto;
+    background: linear-gradient(90deg, 
+      #f8fafc 0%, #f8fafc 8%,
+      #e2e8f0 8%, #e2e8f0 16%,
+      #f8fafc 16%, #f8fafc 24%,
+      #e2e8f0 24%, #e2e8f0 32%,
+      #f8fafc 32%, #f8fafc 40%,
+      #e2e8f0 40%, #e2e8f0 48%,
+      #f8fafc 48%, #f8fafc 56%,
+      #e2e8f0 56%, #e2e8f0 64%,
+      #f8fafc 64%, #f8fafc 72%,
+      #e2e8f0 72%, #e2e8f0 80%,
+      #f8fafc 80%, #f8fafc 88%,
+      #e2e8f0 88%, #e2e8f0 96%,
+      #f8fafc 96%, #f8fafc 100%
+    );
+    border-radius: 4px; position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .test-strip:hover { transform: scale(1.05); }
+  .test-strip.dipped { animation: dipAnimation 1s ease; }
+  @keyframes dipAnimation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(80px); }
+  }
+  .strip-pad {
+    position: absolute; top: 0; bottom: 0; width: 8%;
+    background: #f1f5f9; border-radius: 2px;
+    transition: background-color 1s ease;
+  }
+  .control-panel {
+    background: var(--bg); border-radius: var(--radius-2xl);
+    padding: 1.5rem; border: 1px solid var(--slate700);
+  }
+  .parameter-sliders {
+    display: flex; flex-direction: column; gap: 1.25rem;
+  }
+  .slider-group {
+    display: flex; flex-direction: column; gap: .5rem;
+  }
+  .slider-header {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .875rem;
+  }
+  .slider-label { font-weight: 600; color: var(--slate300); }
+  .slider-value { 
+    padding: .25rem .75rem; background: var(--accent);
+    color: white; border-radius: 99px; font-size: .75rem; font-weight: 700;
+  }
+  input[type="range"] {
+    width: 100%; height: 6px; background: var(--slate700);
+    border-radius: 99px; outline: none; -webkit-appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    background: var(--accent); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 10px var(--accent-glow); transition: transform 0.2s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .result-display {
+    margin-top: 1.5rem; padding: 1rem;
+    background: var(--surface); border-radius: var(--radius-xl);
+    border: 1px solid var(--slate700);
+  }
+  .result-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .75rem 0; border-bottom: 1px solid var(--slate700);
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-name { font-size: .875rem; color: var(--slate400); }
+  .result-status { 
+    padding: .25rem 1rem; border-radius: 99px; font-size: .75rem; font-weight: 700;
+  }
+  .result-status.normal { background: rgba(16,185,129,0.2); color: var(--success); }
+  .result-status.warning { background: rgba(245,158,11,0.2); color: var(--warning); }
+  .result-status.danger { background: rgba(239,68,68,0.2); color: var(--danger); }
+
+  /* ── GLOSARIO INTERACTIVO ── */
+  .glosario-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+  }
+  .glosario-card {
+    background: var(--surface); border: 1px solid var(--slate700);
+    border-radius: var(--radius-2xl); padding: 1.5rem;
+    cursor: pointer; transition: all 0.3s; position: relative;
+    overflow: hidden;
+  }
+  .glosario-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--purple));
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .glosario-card:hover {
+    transform: translateY(-4px); border-color: var(--accent);
+    box-shadow: var(--shadow-glow);
+  }
+  .glosario-card:hover::after { transform: scaleX(1); }
+  .glosario-card.active {
+    border-color: var(--accent); background: rgba(59,130,246,0.1);
+  }
+  .glosario-icon {
+    width: 3rem; height: 3rem; border-radius: var(--radius-xl);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem; font-size: 1.5rem;
+    background: var(--bg);
+  }
+  .glosario-term { font-size: 1.125rem; font-weight: 700; margin-bottom: .5rem; }
+  .glosario-def { font-size: .875rem; color: var(--slate400); line-height: 1.6; }
+  .glosario-detail {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s;
+    margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--slate700);
+  }
+  .glosario-card.active .glosario-detail { max-height: 200px; }
+  .detail-item {
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .875rem; color: var(--slate300); margin-bottom: .5rem;
+  }
+
+  /* ── QUIZ MEJORADO ── */
+  .quiz-container { max-width: 800px; margin: 0 auto; }
+  .quiz-header {
+    text-align: center; margin-bottom: 2rem;
+  }
+  .quiz-progress {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .progress-step {
+    flex: 1; height: 8px; background: var(--surface);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill-quiz {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--purple));
+    border-radius: 99px; transition: width 0.5s ease;
+  }
+  .quiz-card {
+    background: var(--surface); border: 1px solid var(--slate700);
+    border-radius: var(--radius-3xl); padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+  }
+  .question-badge {
+    display: inline-block; padding: .5rem 1rem;
+    background: var(--accent); color: white;
+    border-radius: var(--radius-xl); font-size: .75rem; font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .quiz-question {
+    font-size: 1.25rem; font-weight: 700; line-height: 1.5;
+    margin-bottom: 2rem; color: var(--slate100);
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 1rem; }
+  .quiz-option {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1.25rem; background: var(--bg);
+    border: 2px solid var(--slate700); border-radius: var(--radius-xl);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .quiz-option:hover {
+    border-color: var(--accent); background: rgba(59,130,246,0.1);
+  }
+  .quiz-option.selected {
+    border-color: var(--accent); background: rgba(59,130,246,0.2);
+  }
+  .quiz-option.correct {
+    border-color: var(--success); background: rgba(16,185,129,0.2);
+  }
+  .quiz-option.incorrect {
+    border-color: var(--danger); background: rgba(239,68,68,0.2);
+  }
+  .option-letter {
+    width: 2.5rem; height: 2.5rem; border-radius: var(--radius-xl);
+    background: var(--surface); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--slate400); flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .quiz-option:hover .option-letter { background: var(--accent); color: white; }
+  .quiz-option.selected .option-letter { background: var(--accent); color: white; }
+  .quiz-option.correct .option-letter { background: var(--success); color: white; }
+  .quiz-option.incorrect .option-letter { background: var(--danger); color: white; }
+  .option-text { font-size: 1rem; font-weight: 500; }
+  
+  .feedback-box {
+    margin-top: 1.5rem; padding: 1.25rem;
+    background: var(--bg); border-radius: var(--radius-xl);
+    border-left: 4px solid var(--accent);
+    display: none;
+  }
+  .feedback-box.show { display: block; animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+  .feedback-title { font-weight: 700; margin-bottom: .5rem; color: var(--accent); }
+  .feedback-text { font-size: .875rem; color: var(--slate300); line-height: 1.6; }
+
+  .quiz-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .875rem 1.5rem; border-radius: var(--radius-xl);
+    font-family: inherit; font-size: .875rem; font-weight: 700;
+    border: none; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+    box-shadow: 0 4px 15px var(--accent-glow);
+  }
+  .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+  .btn-secondary {
+    background: var(--surface); color: var(--slate300);
+    border: 1px solid var(--slate700);
+  }
+  .btn-secondary:hover { background: var(--slate700); }
+
+  /* ── RESULTADOS ── */
+  .results-hero {
+    text-align: center; padding: 3rem 2rem;
+    background: linear-gradient(135deg, var(--surface) 0%, var(--slate700) 100%);
+    border-radius: var(--radius-3xl); margin-bottom: 2rem;
+  }
+  .results-icon {
+    width: 6rem; height: 6rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem; font-size: 3rem;
+  }
+  .results-icon.gold { background: rgba(245,158,11,0.2); }
+  .results-icon.silver { background: rgba(148,163,184,0.2); }
+  .results-icon.bronze { background: rgba(180,83,9,0.2); }
+  .results-score { font-size: 4rem; font-weight: 900; margin-bottom: .5rem; }
+  .results-message { font-size: 1.25rem; color: var(--slate300); margin-bottom: 1.5rem; }
+  .achievements {
+    display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .achievement {
+    padding: .75rem 1.25rem; background: var(--bg);
+    border-radius: var(--radius-xl); border: 1px solid var(--slate700);
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .875rem; font-weight: 600;
+  }
+
+  /* ── REPORTE ── */
+  .report-container {
+    max-width: 1000px; margin: 0 auto;
+    background: var(--surface); border-radius: var(--radius-3xl);
+    border: 1px solid var(--slate700); overflow: hidden;
+  }
+  .report-header {
+    padding: 2rem; background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+    color: white;
+  }
+  .report-title { font-size: 1.5rem; font-weight: 700; margin-bottom: .5rem; }
+  .report-subtitle { opacity: 0.9; font-size: .875rem; }
+  .report-body { padding: 2rem; }
+  .form-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .form-group {
+    display: flex; flex-direction: column; gap: .5rem;
+  }
+  .form-label {
+    font-size: .75rem; font-weight: 700; color: var(--slate400);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .form-input, .form-select {
+    padding: .875rem 1rem; background: var(--bg);
+    border: 1px solid var(--slate700); border-radius: var(--radius-xl);
+    color: var(--slate100); font-family: inherit; font-size: .875rem;
+    outline: none; transition: all 0.2s;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .visual-preview {
+    background: var(--bg); border-radius: var(--radius-2xl);
+    padding: 2rem; text-align: center; margin-bottom: 2rem;
+  }
+  .preview-title { font-size: .875rem; color: var(--slate400); margin-bottom: 1rem; }
+  .urine-visual {
+    width: 100px; height: 140px; margin: 0 auto;
+    background: #fbbf24; border-radius: 0 0 40px 40px;
+    border: 3px solid var(--slate600); position: relative;
+    transition: all 0.5s;
+  }
+  .btn-generate {
+    width: 100%; padding: 1.25rem;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+    color: white; border: none; border-radius: var(--radius-xl);
+    font-family: inherit; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-generate:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; backdrop-filter: blur(8px);
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+  .modal-content {
+    background: var(--surface); border: 1px solid var(--slate700);
+    border-radius: var(--radius-3xl); max-width: 600px; width: 90%;
+    max-height: 80vh; overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+  }
+  .modal-header {
+    padding: 1.5rem 2rem; border-bottom: 1px solid var(--slate700);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-title { font-size: 1.25rem; font-weight: 700; }
+  .modal-close {
+    width: 2rem; height: 2rem; border-radius: var(--radius-xl);
+    background: var(--bg); border: none; color: var(--slate400);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--danger); color: white; }
+  .modal-body { padding: 2rem; }
+  .certificate-preview {
+    background: var(--bg); border-radius: var(--radius-xl);
+    padding: 1.5rem; font-family: 'DM Mono', monospace;
+    font-size: .75rem; line-height: 1.8; color: var(--slate300);
+    border: 1px solid var(--slate700); white-space: pre-wrap;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    aside { width: 240px; }
+    .simulator-container { grid-template-columns: 1fr; }
+    .glosario-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .quick-actions { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    aside { transform: translateX(-100%); position: absolute; height: 100%; }
+    .glosario-grid { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .float { animation: float 6s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  .glow { animation: glow 2s ease-in-out infinite alternate; }
+  @keyframes glow {
+    from { box-shadow: 0 0 5px var(--accent-glow); }
+    to { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-header">
+      <div class="logo-badge">CETIS 43-DGETI 2024</div>
+      <div class="logo-title">Lab. Álvarez 🔬</div>
+    </div>
+    <div class="student-progress">
+      <div class="progress-header">
+        <span>Tu Progreso</span>
+        <span>Nivel 3</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="sidebarProgress"></div>
+      </div>
+      <div class="xp-badge">
+        <span>⚡</span>
+        <span id="xpText">1,250 XP</span>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-btn active" onclick="showTab('dashboard', this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="showTab('simulador', this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Simulador 3D
+        <span class="nav-badge">Nuevo</span>
+      </button>
+      <button class="nav-btn" onclick="showTab('glosario', this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Glosario Interactivo
+      </button>
+      <button class="nav-btn" onclick="showTab('examen', this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Examen Certificación
+      </button>
+      <button class="nav-btn" onclick="showTab('reporte', this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Generar Reporte
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div>CETIS 43 - DGETI</div>
+      <div style="margin-top: 0.25rem; opacity: 0.7;">v2.0 Interactivo</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <header>
+      <div class="header-title" id="headerTitle">Dashboard</div>
+      <div class="header-actions">
+        <button class="notification-btn" onclick="showNotifications()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notification-dot"></span>
+        </button>
+        <div class="streak-counter">
+          <span>🔥</span>
+          <span>5 días</span>
+        </div>
+        <div class="avatar-group">
+          <div class="avatar">ES</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="tab active" id="tab-dashboard">
+        <div class="welcome-banner">
+          <div class="welcome-text">
+            ¡Hola Estudiante! 
+            <span class="waving-hand">👋</span>
+          </div>
+          <div class="welcome-sub">Continúa tu práctica de análisis de orina. Tienes 2 simulaciones pendientes.</div>
+        </div>
+
+        <div class="quick-actions">
+          <div class="action-card" onclick="showTab('simulador', document.querySelectorAll('.nav-btn')[1])">
+            <div class="action-icon blue">🧪</div>
+            <div class="action-title">Simulador de Tiras</div>
+            <div class="action-desc">Practica con pacientes virtuales</div>
+          </div>
+          <div class="action-card" onclick="showTab('examen', document.querySelectorAll('.nav-btn')[3])">
+            <div class="action-icon purple">📝</div>
+            <div class="action-title">Examen Rápido</div>
+            <div class="action-desc">10 preguntas - 5 minutos</div>
+          </div>
+          <div class="action-card" onclick="showTab('reporte', document.querySelectorAll('.nav-btn')[4])">
+            <div class="action-icon pink">📊</div>
+            <div class="action-title">Nuevo Reporte</div>
+            <div class="action-desc">Captura resultados de práctica</div>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="stat-icon-box" style="background: rgba(59,130,246,0.2);">🎯</div>
+            <div class="stat-info">
+              <div class="stat-label">Precisión</div>
+              <div class="stat-value">87%</div>
+            </div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-icon-box" style="background: rgba(16,185,129,0.2);">✅</div>
+            <div class="stat-info">
+              <div class="stat-label">Evaluaciones</div>
+              <div class="stat-value">12/20</div>
+            </div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-icon-box" style="background: rgba(245,158,11,0.2);">⏱️</div>
+            <div class="stat-info">
+              <div class="stat-label">Tiempo Pract.</div>
+              <div class="stat-value">4.5h</div>
+            </div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-icon-box" style="background: rgba(139,92,246,0.2);">🏆</div>
+            <div class="stat-info">
+              <div class="stat-label">Logros</div>
+              <div class="stat-value">8/15</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO -->
+      <div class="tab" id="tab-simulador">
+        <div class="simulator-container">
+          <div class="simulator-stage">
+            <div class="stage-title">🧪 Laboratorio Virtual</div>
+            <div class="urine-sample" id="urineSample">
+              <div class="urine-foam" id="urineFoam"></div>
+            </div>
+            <div class="test-strip" id="testStrip" onclick="dipStrip()">
+              <div class="strip-pad" style="left: 4%;" id="pad1"></div>
+              <div class="strip-pad" style="left: 12%;" id="pad2"></div>
+              <div class="strip-pad" style="left: 20%;" id="pad3"></div>
+              <div class="strip-pad" style="left: 28%;" id="pad4"></div>
+              <div class="strip-pad" style="left: 36%;" id="pad5"></div>
+              <div class="strip-pad" style="left: 44%;" id="pad6"></div>
+              <div class="strip-pad" style="left: 52%;" id="pad7"></div>
+              <div class="strip-pad" style="left: 60%;" id="pad8"></div>
+              <div class="strip-pad" style="left: 68%;" id="pad9"></div>
+              <div class="strip-pad" style="left: 76%;" id="pad10"></div>
+            </div>
+            <p style="text-align: center; margin-top: 2rem; color: var(--slate400); font-size: 0.875rem;">
+              Haz clic en la tira para sumergirla en la muestra
+            </p>
+          </div>
+          
+          <div class="control-panel">
+            <div class="stage-title">⚙️ Parámetros de la Muestra</div>
+            <div class="parameter-sliders">
+              <div class="slider-group">
+                <div class="slider-header">
+                  <span class="slider-label">Concentración (Densidad)</span>
+                  <span class="slider-value" id="densityValue">1.020</span>
+                </div>
+                <input type="range" min="1000" max="1035" value="1020" id="densitySlider" oninput="updateSimulation()">
+              </div>
+              <div class="slider-group">
+                <div class="slider-header">
+                  <span class="slider-label">pH</span>
+                  <span class="slider-value" id="phValue">6.0</span>
+                </div>
+                <input type="range" min="50" max="90" value="60" id="phSlider" oninput="updateSimulation()">
+              </div>
+              <div class="slider-group">
+                <div class="slider-header">
+                  <span class="slider-label">Glucosa (mg/dL)</span>
+                  <span class="slider-value" id="glucoseValue">0</span>
+                </div>
+                <input type="range" min="0" max="500" value="0" id="glucoseSlider" oninput="updateSimulation()">
+              </div>
+              <div class="slider-group">
+                <div class="slider-header">
+                  <span class="slider-label">Proteínas (mg/dL)</span>
+                  <span class="slider-value" id="proteinValue">0</span>
+                </div>
+                <input type="range" min="0" max="300" value="0" id="proteinSlider" oninput="updateSimulation()">
+              </div>
+              <div class="slider-group">
+                <div class="slider-header">
+                  <span class="slider-label">Sangre (Eritrocitos)</span>
+                  <span class="slider-value" id="bloodValue">Negativo</span>
+                </div>
+                <input type="range" min="0" max="3" value="0" id="bloodSlider" oninput="updateSimulation()">
+              </div>
+            </div>
+            
+            <div class="result-display" id="resultDisplay">
+              <div class="result-item">
+                <span class="result-name">Color estimado</span>
+                <span class="result-status normal" id="colorResult">Ámbar normal</span>
+              </div>
+              <div class="result-item">
+                <span class="result-name">Espuma</span>
+                <span class="result-status normal" id="foamResult">Fugaz</span>
+              </div>
+              <div class="result-item">
+                <span class="result-name">Olor</span>
+                <span class="result-status normal" id="odorResult">Sui géneris</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GLOSARIO INTERACTIVO -->
+      <div class="tab" id="tab-glosario">
+        <div class="glosario-grid">
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">🟤</div>
+            <div class="glosario-term">Coluria</div>
+            <div class="glosario-def">Coloración oscura de la orina similar al té o refresco de cola por bilirrubina conjugada.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Espuma amarilla persistente</div>
+              <div class="detail-item">🩺 Asociado a: Hepatopatías, obstrucción biliar</div>
+              <div class="detail-item">⚗️ Tira reactiva: Bilirrubina (+)</div>
+            </div>
+          </div>
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">🔴</div>
+            <div class="glosario-term">Hematuria</div>
+            <div class="glosario-def">Presencia de sangre (eritrocitos) en la orina. Puede ser macroscópica o microscópica.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Color rojo a marrón</div>
+              <div class="detail-item">🩺 Causas: Infección, cálculos, trauma, neoplasias</div>
+              <div class="detail-item">⚗️ Tira: Sangre (+), posible proteinuria</div>
+            </div>
+          </div>
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">⚪</div>
+            <div class="glosario-term">Piuria</div>
+            <div class="glosario-def">Presencia de pus o leucocitos abundantes (>5 x campo) indicativo de infección.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Orina turbia, olor fétido</div>
+              <div class="detail-item">🩺 Infección urinaria activa</div>
+              <div class="detail-item">⚗️ Tira: Leucocitos (+), Nitritos (+)</div>
+            </div>
+          </div>
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">🍎</div>
+            <div class="glosario-term">Cetonuria</div>
+            <div class="glosario-def">Aparición de cuerpos cetónicos en orina. Olor característico a manzana madura.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Olor frutal característico</div>
+              <div class="detail-item">🩺 Diabetes descompensada, ayuno, dieta cetogénica</div>
+              <div class="detail-item">⚗️ Tira: Cetonas (+), Glucosa variable</div>
+            </div>
+          </div>
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">🍯</div>
+            <div class="glosario-term">Glucosuria</div>
+            <div class="glosario-def">Presencia de glucosa cuando supera umbral renal (180 mg/dL). Orina dulce.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Atrae insectos, olor dulzón</div>
+              <div class="detail-item">🩺 Diabetes mellitus, embarazo, daño tubular</div>
+              <div class="detail-item">⚗️ Tira: Glucosa (+), Cetonas posible</div>
+            </div>
+          </div>
+          <div class="glosario-card" onclick="toggleCard(this)">
+            <div class="glosario-icon">🫧</div>
+            <div class="glosario-term">Proteinuria</div>
+            <div class="glosario-def">Presencia anormal de proteínas. Espuma blanca persistente al agitar.</div>
+            <div class="glosario-detail">
+              <div class="detail-item">🔍 Espuma abundante y persistente</div>
+              <div class="detail-item">🩺 Daño glomerular, síndrome nefrótico</div>
+              <div class="detail-item">⚗️ Tira: Proteína (+), posible sangre</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAMEN MEJORADO -->
+      <div class="tab" id="tab-examen">
+        <div class="quiz-container" id="quizContainer">
+          <!-- Contenido generado por JS -->
+        </div>
+      </div>
+
+      <!-- REPORTE -->
+      <div class="tab" id="tab-reporte">
+        <div class="report-container">
+          <div class="report-header">
+            <div class="report-title">📋 Captura de Resultados</div>
+            <div class="report-subtitle">Registro oficial de análisis de orina - CETIS 43-DGETI</div>
+          </div>
+          <div class="report-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre del Paciente</label>
+                <input type="text" class="form-input" id="repPaciente" placeholder="Ej: María González">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha de Análisis</label>
+                <input type="date" class="form-input" id="repFecha">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Edad</label>
+                <input type="number" class="form-input" id="repEdad" placeholder="Años">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Género</label>
+                <select class="form-select" id="repGenero">
+                  <option>Femenino</option>
+                  <option>Masculino</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Color</label>
+                <select class="form-select" id="repColor" onchange="updatePreview()">
+                  <option value="incoloro">Incoloro</option>
+                  <option value="palido">Amarillo pálido</option>
+                  <option value="normal" selected>Amarillo/Ámbar</option>
+                  <option value="rojo">Rojo (Hematuria)</option>
+                  <option value="marron">Marrón (Coluria)</option>
+                  <option value="verde">Verde/Azul</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aspecto</label>
+                <select class="form-select" id="repAspecto">
+                  <option>Transparente</option>
+                  <option>Opalescente</option>
+                  <option selected>Ligeramente turbio</option>
+                  <option>Turbio</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Densidad</label>
+                <input type="text" class="form-input" id="repDensidad" placeholder="1.010 - 1.030">
+              </div>
+              <div class="form-group">
+                <label class="form-label">pH</label>
+                <input type="text" class="form-input" id="repPh" placeholder="4.5 - 8.0">
+              </div>
+            </div>
+
+            <div class="visual-preview">
+              <div class="preview-title">Vista previa de la muestra</div>
+              <div class="urine-visual" id="previewUrine"></div>
+            </div>
+
+            <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="form-group">
+                <label class="form-label">Glucosa</label>
+                <select class="form-select" id="repGlucosa">
+                  <option selected>Negativo</option>
+                  <option>Trace (+/-)</option>
+                  <option>+ (100 mg/dL)</option>
+                  <option>++ (250 mg/dL)</option>
+                  <option>+++ (500 mg/dL)</option>
+                  <option>++++ (>1000 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Proteínas</label>
+                <select class="form-select" id="repProteinas">
+                  <option selected>Negativo</option>
+                  <option>Trace</option>
+                  <option>+ (30 mg/dL)</option>
+                  <option>++ (100 mg/dL)</option>
+                  <option>+++ (300 mg/dL)</option>
+                  <option>++++ (>2000 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cetonas</label>
+                <select class="form-select" id="repCetonas">
+                  <option selected>Negativo</option>
+                  <option>Trace</option>
+                  <option>+ (15 mg/dL)</option>
+                  <option>++ (40 mg/dL)</option>
+                  <option>+++ (80 mg/dL)</option>
+                  <option>++++ (160 mg/dL)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-generate" onclick="generateCertificate()" style="margin-top: 2rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Generar Certificado PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      Centro de Estudios Tecnológicos Industrial y de Servicios No. 43 • DGETI Secretaría de Educación Pública
+    </footer>
+  </main>
+</div>
+
+<!-- MODAL CERTIFICADO -->
+<div class="modal-overlay" id="certModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">📜 Certificado Generado</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="certificate-preview" id="certPreview"></div>
+      <button class="btn btn-primary" onclick="closeModal()" style="width: 100%; margin-top: 1rem;">
+        Descargar PDF
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── NAVEGACIÓN ──
+  const tabs = ['dashboard', 'simulador', 'glosario', 'examen', 'reporte'];
+  const titles = {
+    dashboard: 'Dashboard',
+    simulador: 'Simulador 3D',
+    glosario: 'Glosario Interactivo',
+    examen: 'Examen de Certificación',
+    reporte: 'Generar Reporte'
+  };
+
+  function showTab(id, btn) {
+    tabs.forEach(t => {
+      document.getElementById('tab-' + t).classList.remove('active');
+    });
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('tab-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    document.getElementById('headerTitle').textContent = titles[id];
+    
+    if (id === 'examen') initQuiz();
+    if (id === 'simulador') updateSimulation();
+  }
+
+  // ── SIMULADOR INTERACTIVO ──
+  function updateSimulation() {
+    const density = document.getElementById('densitySlider').value;
+    const ph = document.getElementById('phSlider').value / 10;
+    const glucose = document.getElementById('glucoseSlider').value;
+    const protein = document.getElementById('proteinSlider').value;
+    const blood = document.getElementById('bloodSlider').value;
+    
+    document.getElementById('densityValue').textContent = '1.' + density.toString().padStart(3, '0');
+    document.getElementById('phValue').textContent = ph.toFixed(1);
+    document.getElementById('glucoseValue').textContent = glucose + (glucose > 0 ? ' mg/dL' : '');
+    document.getElementById('proteinValue').textContent = protein + (protein > 0 ? ' mg/dL' : '');
+    const bloodLevels = ['Negativo', 'Trace', '+', '++'];
+    document.getElementById('bloodValue').textContent = bloodLevels[blood];
+    
+    // Actualizar color de orina
+    const urine = document.getElementById('urineSample');
+    let color = '#fbbf24'; // Default ámbar
+    
+    if (density > 1025) color = '#d97706'; // Concentrada
+    if (density < 1010) color = '#fef3c7'; // Diluida
+    if (blood > 0) color = blood > 1 ? '#7f1d1d' : '#ef4444'; // Sangre
+    if (ph > 7.5) color = '#10b981'; // Alcalina (verde/azul)
+    
+    urine.style.background = `linear-gradient(180deg, ${color} 0%, ${adjustColor(color, -20)} 100%)`;
+    
+    // Actualizar espuma
+    const foam = document.getElementById('urineFoam');
+    foam.style.opacity = protein > 100 ? '0.8' : (protein > 0 ? '0.4' : '0');
+    if (protein > 0) {
+      document.getElementById('foamResult').textContent = protein > 100 ? 'Persistente' : 'Moderada';
+      document.getElementById('foamResult').className = 'result-status ' + (protein > 150 ? 'danger' : 'warning');
+    } else {
+      document.getElementById('foamResult').textContent = 'Fugaz';
+      document.getElementById('foamResult').className = 'result-status normal';
+    }
+    
+    // Actualizar resultados
+    document.getElementById('colorResult').textContent = blood > 0 ? 'Alterado (sangre)' : (density > 1025 ? 'Concentrada' : 'Normal');
+    document.getElementById('colorResult').className = 'result-status ' + (blood > 0 || density > 1025 ? 'warning' : 'normal');
+    
+    // Olor
+    let odor = 'Sui géneris';
+    let odorClass = 'normal';
+    if (glucose > 100) { odor = 'Dulce (glucosuria)'; odorClass = 'warning'; }
+    if (document.getElementById('glucoseSlider').value > 0 && glucose === 0) {
+      // Cetonas simuladas si hay glucosa alta
+      odor = 'Frutal (cetona)'; odorClass = 'danger';
+    }
+    document.getElementById('odorResult').textContent = odor;
+    document.getElementById('odorResult').className = 'result-status ' + odorClass;
+  }
+
+  function adjustColor(color, amount) {
+    return color; // Simplificado para demo
+  }
+
+  function dipStrip() {
+    const strip = document.getElementById('testStrip');
+    strip.classList.add('dipped');
+    
+    setTimeout(() => {
+      // Cambiar colores de almohadillas según parámetros
+      const glucose = document.getElementById('glucoseSlider').value;
+      const protein = document.getElementById('proteinSlider').value;
+      const blood = document.getElementById('bloodSlider').value;
+      const ph = document.getElementById('phSlider').value / 10;
+      
+      // Pad 1: Leucocitos (simulado verde)
+      document.getElementById('pad1').style.backgroundColor = '#10b981';
+      
+      // Pad 2: Nitritos (simulado rosa)
+      document.getElementById('pad2').style.backgroundColor = '#ec4899';
+      
+      // Pad 3: Urobilinógeno (amarillo)
+      document.getElementById('pad3').style.backgroundColor = '#fbbf24';
+      
+      // Pad 4: Proteínas (amarillo a verde)
+      const protColor = protein > 100 ? '#059669' : (protein > 0 ? '#10b981' : '#fbbf24');
+      document.getElementById('pad4').style.backgroundColor = protColor;
+      
+      // Pad 5: pH (naranja a verde)
+      const phColor = ph > 7 ? '#10b981' : (ph < 6 ? '#f97316' : '#fbbf24');
+      document.getElementById('pad5').style.backgroundColor = phColor;
+      
+      // Pad 6: Sangre (verde a verde oscuro)
+      const bloodColor = blood > 0 ? '#166534' : '#10b981';
+      document.getElementById('pad6').style.backgroundColor = bloodColor;
+      
+      // Pad 7: Gravedad específica (azul)
+      document.getElementById('pad7').style.backgroundColor = '#3b82f6';
+      
+      // Pad 8: Cetonas (beige a morado)
+      document.getElementById('pad8').style.backgroundColor = glucose > 100 ? '#8b5cf6' : '#fde68a';
+      
+      // Pad 9: Bilirrubina (beige a café)
+      document.getElementById('pad9').style.backgroundColor = '#d4a574';
+      
+      // Pad 10: Glucosa (azul a marrón)
+      const glucColor = glucose > 200 ? '#92400e' : (glucose > 0 ? '#3b82f6' : '#dbeafe');
+      document.getElementById('pad10').style.backgroundColor = glucColor;
+      
+      strip.classList.remove('dipped');
+    }, 1000);
+  }
+
+  // ── GLOSARIO ──
+  function toggleCard(card) {
+    const wasActive = card.classList.contains('active');
+    document.querySelectorAll('.glosario-card').forEach(c => c.classList.remove('active'));
+    if (!wasActive) card.classList.add('active');
+  }
+
+  // ── QUIZ MEJORADO ──
+  const quizData = [
+    {
+      question: "Un paciente presenta orina de color marrón oscuro con espuma amarilla persistente. ¿Qué parámetro químico esperarías positivo?",
+      options: ["Glucosa (+++)", "Bilirrubina (++)", "Cetonas (+)", "Nitritos (+++)"],
+      correct: 1,
+      feedback: "La coluria (color marrón) + espuma amarilla = bilirrubina. Este es el signo clásico de hepatopatía o obstrucción biliar."
+    },
+    {
+      question: "En un niño con diabetes tipo 1 descompensada, ¿qué combinación de hallazgos es más probable?",
+      options: ["Glucosa (-) / Cetonas (-)", "Glucosa (+) / Cetonas (+)", "Proteínas (+++) / Sangre (-)", "Nitritos (+) / Leucocitos (+)"],
+      correct: 1,
+      feedback: "Cetoacidosis diabética: glucosuria masiva + cetonuria. El cuerpo quema grasas por falta de insulina, produciendo cetonas."
+    },
+    {
+      question: "Una muestra con densidad 1.035 y aspecto turbio sugiere:",
+      options: ["Diabetes insípida", "Deshidratación severa / Concentración máxima", "Insuficiencia renal aguda", "Ingesta excesiva de agua"],
+      correct: 1,
+      feedback: "Densidad >1.030 indica orina muy concentrada. El riñón está conservando agua al máximo, típico de deshidratación."
+    },
+    {
+      question: "¿Cuál es el tiempo de lectura CORRECTO para los leucocitos en tiras Spinreact?",
+      options: ["Inmediato (0 seg)", "60-120 segundos", "5 minutos", "30 segundos exactos"],
+      correct: 1,
+      feedback: "Los leucocitos requieren 60-120 segundos. Leer antes da falsos negativos; después de 2 minutos puede haber reacciones cruzadas."
+    },
+    {
+      question: "Paciente con piuria (pus en orina). ¿Qué característica FÍSICA NO esperarías?",
+      options: ["Turbidez marcada", "Olor fétido", "Espuma blanca persistente", "Sedimento al decantar"],
+      correct: 2,
+      feedback: "La espuma persistente indica PROTEÍNAS (albumina), no pus. La piuria da turbidez, olor fétido y sedimento, pero la espuma es fugaz."
+    }
+  ];
+
+  let currentQuestion = 0;
+  let quizScore = 0;
+  let selectedOption = null;
+
+  function initQuiz() {
+    currentQuestion = 0;
+    quizScore = 0;
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const container = document.getElementById('quizContainer');
+    
+    if (currentQuestion >= quizData.length) {
+      showResults();
+      return;
+    }
+    
+    const q = quizData[currentQuestion];
+    const progress = ((currentQuestion) / quizData.length) * 100;
+    
+    container.innerHTML = `
+      <div class="quiz-header">
+        <div class="quiz-progress">
+          ${quizData.map((_, i) => `
+            <div class="progress-step">
+              <div class="progress-fill-quiz" style="width: ${i < currentQuestion ? 100 : 0}%"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <div class="quiz-card">
+        <span class="question-badge">Pregunta ${currentQuestion + 1} de ${quizData.length}</span>
+        <h3 class="quiz-question">${q.question}</h3>
+        
+        <div class="quiz-options">
+          ${q.options.map((opt, i) => `
+            <div class="quiz-option" onclick="selectOption(${i})" data-index="${i}">
+              <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+              <div class="option-text">${opt}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="feedback-box" id="feedbackBox">
+          <div class="feedback-title" id="feedbackTitle"></div>
+          <div class="feedback-text" id="feedbackText"></div>
+        </div>
+        
+        <div class="quiz-nav">
+          <button class="btn btn-secondary" onclick="skipQuestion()">Omitir</button>
+          <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+            Siguiente →
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function selectOption(index) {
+    if (selectedOption !== null) return;
+    selectedOption = index;
+    
+    const options = document.querySelectorAll('.quiz-option');
+    options[index].classList.add('selected');
+    
+    const correct = quizData[currentQuestion].correct;
+    const feedbackBox = document.getElementById('feedbackBox');
+    const feedbackTitle = document.getElementById('feedbackTitle');
+    const feedbackText = document.getElementById('feedbackText');
+    
+    setTimeout(() => {
+      if (index === correct) {
+        options[index].classList.add('correct');
+        options[index].classList.remove('selected');
+        feedbackTitle.textContent = '✅ ¡Correcto! +50 XP';
+        feedbackTitle.style.color = 'var(--success)';
+        quizScore++;
+        updateXP(50);
+      } else {
+        options[index].classList.add('incorrect');
+        options[index].classList.remove('selected');
+        options[correct].classList.add('correct');
+        feedbackTitle.textContent = '❌ Incorrecto';
+        feedbackTitle.style.color = 'var(--danger)';
+      }
+      
+      feedbackText.textContent = quizData[currentQuestion].feedback;
+      feedbackBox.classList.add('show');
+      document.getElementById('nextBtn').disabled = false;
+    }, 500);
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    selectedOption = null;
+    renderQuestion();
+  }
+
+  function skipQuestion() {
+    currentQuestion++;
+    selectedOption = null;
+    renderQuestion();
+  }
+
+  function showResults() {
+    const container = document.getElementById('quizContainer');
+    const percentage = Math.round((quizScore / quizData.length) * 100);
+    let icon, title, message;
+    
+    if (percentage >= 80) {
+      icon = '🏆'; title = '¡Excelente!'; message = 'Dominas el análisis de orina';
+    } else if (percentage >= 60) {
+      icon = '🥈'; title = '¡Bien hecho!'; message = 'Sigue practicando';
+    } else {
+      icon = '📚'; title = 'Necesitas repasar'; message = 'Revisa el glosario e intenta de nuevo';
+    }
+    
+    container.innerHTML = `
+      <div class="results-hero">
+        <div class="results-icon ${percentage >= 80 ? 'gold' : (percentage >= 60 ? 'silver' : 'bronze')}">${icon}</div>
+        <div class="results-score">${percentage}%</div>
+        <div class="results-message">${title}</div>
+        <div style="color: var(--slate400); margin-bottom: 1.5rem;">${message}</div>
+        <div class="achievements">
+          <div class="achievement">🎯 ${quizScore}/${quizData.length} correctas</div>
+          <div class="achievement">⚡ +${quizScore * 50} XP ganados</div>
+          ${percentage >= 80 ? '<div class="achievement" style="color: var(--warning);">🏅 Certificado desbloqueado</div>' : ''}
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <button class="btn btn-primary" onclick="initQuiz()">↻ Intentar de nuevo</button>
+        <button class="btn btn-secondary" onclick="showTab('glosario', document.querySelectorAll('.nav-btn')[2])" style="margin-left: 1rem;">
+          📖 Estudiar glosario
+        </button>
+      </div>
+    `;
+    
+    if (percentage >= 80) updateXP(200);
+  }
+
+  // ── SISTEMA DE XP ──
+  let currentXP = 1250;
+  function updateXP(amount) {
+    currentXP += amount;
+    document.getElementById('xpText').textContent = currentXP.toLocaleString() + ' XP';
+    
+    // Animación de progreso
+    const progress = Math.min((currentXP / 2000) * 100, 100);
+    document.getElementById('sidebarProgress').style.width = progress + '%';
+  }
+
+  // ── REPORTE ──
+  function updatePreview() {
+    const color = document.getElementById('repColor').value;
+    const preview = document.getElementById('previewUrine');
+    const colors = {
+      incoloro: '#f8fafc',
+      palido: '#fef9c3',
+      normal: '#fbbf24',
+      rojo: '#dc2626',
+      marron: '#78350f',
+      verde: '#059669'
+    };
+    preview.style.background = colors[color] || colors.normal;
+  }
+
+  function generateCertificate() {
+    const paciente = document.getElementById('repPaciente').value || 'Paciente sin nombre';
+    const fecha = document.getElementById('repFecha').value || new Date().toISOString().split('T')[0];
+    const color = document.getElementById('repColor').options[document.getElementById('repColor').selectedIndex].text;
+    const aspecto = document.getElementById('repAspecto').value;
+    const densidad = document.getElementById('repDensidad').value || 'No registrado';
+    const ph = document.getElementById('repPh').value || 'No registrado';
+    const glucosa = document.getElementById('repGlucosa').value;
+    const proteinas = document.getElementById('repProteinas').value;
+    const cetonas = document.getElementById('repCetonas').value;
+    
+    const certContent = `
+CENTRO DE ESTUDIOS TECNOLÓGICOS INDUSTRIAL Y DE SERVICIOS NO. 43
+LABORATORIO VIRTUAL ÁLVAREZ - CETIS 43-DGETI
+═══════════════════════════════════════════════════════════
+
+CERTIFICADO DE ANÁLISIS DE ORINA
+Fecha: ${fecha}          Folio: LVA-${Date.now().toString().slice(-6)}
+
+PACIENTE: ${paciente.toUpperCase()}
+
+EXAMEN FÍSICO:
+  Color:        ${color}
+  Aspecto:      ${aspecto}
+  Densidad:     ${densidad}
+  pH:           ${ph}
+
+EXAMEN QUÍMICO (Tira Reactiva):
+  Glucosa:      ${glucosa}
+  Proteínas:    ${proteinas}
+  Cetonas:      ${cetonas}
+
+OBSERVACIONES:
+  Análisis realizado en entorno de simulación CETIS 43-DGETI.
+  Resultados válidos para fines educativos.
+
+Técnico responsable: _________________________
+    `.trim();
+    
+    document.getElementById('certPreview').textContent = certContent;
+    document.getElementById('certModal').classList.add('active');
+    updateXP(100);
+  }
+
+  function closeModal() {
+    document.getElementById('certModal').classList.remove('active');
+  }
+
+  function showNotifications() {
+    alert('🔔 Notificaciones:\n\n• Nueva simulación disponible: Caso Clínico #12\n• Recordatorio: Examen certificador en 3 días\n• ¡Felicidades! Desbloqueaste el logro "Analista Junior"');
+  }
+
+  // Inicializar fecha
+  document.getElementById('repFecha').value = new Date().toISOString().split('T')[0];
+  updatePreview();
+</script>
+</body>
+</html>
