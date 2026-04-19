@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab. Álvarez — SSDC 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Bricolage+Grotesque:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0f1a;
+  --surface:#111827;
+  --surface2:#1a2236;
+  --surface3:#1e2a3a;
+  --border:#1e293b;
+  --border2:#243044;
+  --accent:#4f6ef7;
+  --accent2:#6c8eff;
+  --accent-glow:rgba(79,110,247,.25);
+  --green:#22c55e;
+  --green-dim:#16a34a;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --purple:#a855f7;
+  --cyan:#06b6d4;
+  --text:#e2e8f0;
+  --text2:#94a3b8;
+  --text3:#64748b;
+  --r-sm:.75rem;
+  --r-md:1rem;
+  --r-lg:1.25rem;
+  --r-xl:1.5rem;
+  --r-2xl:2rem;
+  --r-3xl:2.5rem;
+  --shadow-md:0 4px 20px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.5);
+  --shadow-glow:0 0 30px rgba(79,110,247,.15);
+}
+html,body{height:100%;font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+aside{
+  width:280px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-head{
+  padding:1.5rem;
+  background:linear-gradient(135deg,#1a0533 0%,#0d1b4b 100%);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+}
+.sidebar-head::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.sidebar-inst{font-size:.55rem;font-weight:700;letter-spacing:.3em;color:#a78bfa;text-transform:uppercase;margin-bottom:.2rem}
+.sidebar-name{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:#fff}
+.sidebar-sub{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:.15rem;font-family:'JetBrains Mono',monospace}
+
+.xp-section{padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
+.xp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.xp-label{font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.15em;text-transform:uppercase}
+.xp-level{font-size:.7rem;font-weight:700;color:var(--accent);background:rgba(79,110,247,.12);padding:.15rem .5rem;border-radius:99px}
+.xp-bar{height:.35rem;background:var(--border2);border-radius:99px;overflow:hidden;margin-bottom:.4rem}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:99px;width:62%;transition:width .8s ease}
+.xp-val{font-size:.65rem;color:var(--amber);font-weight:700;font-family:'JetBrains Mono',monospace}
+.xp-val svg{display:inline;vertical-align:middle;margin-right:.2rem}
+
+nav{flex:1;padding:1rem;display:flex;flex-direction:column;gap:.2rem;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.75rem 1rem;border-radius:var(--r-lg);
+  border:none;background:transparent;color:var(--text2);
+  font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;text-align:left;width:100%;
+  position:relative;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(79,110,247,.15);color:#fff}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-item .nav-icon{width:1.75rem;height:1.75rem;border-radius:.5rem;display:flex;align-items:center;justify-content:center;background:var(--surface3);flex-shrink:0;font-size:.9rem;transition:all .2s}
+.nav-item.active .nav-icon{background:rgba(79,110,247,.2)}
+.nav-badge{font-size:.5rem;font-weight:800;letter-spacing:.08em;background:#ef4444;color:#fff;padding:.1rem .4rem;border-radius:99px;text-transform:uppercase;margin-left:auto}
+
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.6rem}
+.sf-avatar{width:2.25rem;height:2.25rem;border-radius:.65rem;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0}
+.sf-name{font-size:.78rem;font-weight:700}
+.sf-sub{font-size:.6rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+
+/* ── MAIN ── */
+main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.top-bar{
+  background:rgba(11,15,26,.8);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:.9rem 2rem;display:flex;justify-content:space-between;align-items:center;
+  flex-shrink:0;z-index:20;
+}
+.top-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:700}
+.top-right{display:flex;align-items:center;gap:.75rem}
+.streak-badge{display:flex;align-items:center;gap:.4rem;background:var(--surface2);border:1px solid var(--border2);padding:.4rem .85rem;border-radius:99px;font-size:.75rem;font-weight:700;color:var(--amber)}
+.notif-btn{width:2rem;height:2rem;border-radius:.5rem;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:background .2s}
+.notif-btn:hover{background:var(--surface3)}
+.notif-dot{position:absolute;top:.2rem;right:.2rem;width:.45rem;height:.45rem;background:var(--red);border-radius:50%;border:2px solid var(--bg)}
+.user-chip{width:2rem;height:2rem;border-radius:.5rem;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem}
+
+.content{flex:1;overflow-y:auto;padding:2rem}
+
+/* ── TABS ── */
+.tab{display:none}
+.tab.active{display:block;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DASHBOARD ── */
+.dash-hero{
+  background:linear-gradient(135deg,var(--surface2) 0%,#16213e 100%);
+  border:1px solid var(--border2);
+  border-radius:var(--r-2xl);padding:2rem 2.5rem;margin-bottom:1.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+  position:relative;overflow:hidden;
+}
+.dash-hero::before{
+  content:'🔬';position:absolute;right:2rem;font-size:7rem;opacity:.06;
+  top:50%;transform:translateY(-50%);
+}
+.dash-hero h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.4rem}
+.dash-hero p{font-size:.82rem;color:var(--text2);line-height:1.6;max-width:28rem}
+.hero-actions{display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;border-radius:var(--r-lg);font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 15px rgba(79,110,247,.35)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:.5rem 1rem;font-size:.75rem}
+
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.quick-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:1.5rem;cursor:pointer;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.quick-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
+.quick-card.featured{border-color:rgba(79,110,247,.4);background:rgba(79,110,247,.06)}
+.qc-icon{width:3rem;height:3rem;border-radius:var(--r-md);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.qc-name{font-weight:700;font-size:.92rem;margin-bottom:.3rem}
+.qc-sub{font-size:.75rem;color:var(--text2)}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.25rem;display:flex;align-items:center;gap:.9rem}
+.sc-icon{width:2.5rem;height:2.5rem;border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.sc-label{font-size:.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.2rem}
+.sc-val{font-size:1.1rem;font-weight:800;font-family:'Bricolage Grotesque',sans-serif}
+
+/* ── SIMULADOR 3D ── */
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.sim-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);padding:2rem}
+.sim-panel-title{font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.sim-panel-title span{color:var(--text)}
+
+.flask-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.flask-svg{filter:drop-shadow(0 8px 24px rgba(0,0,0,.5));cursor:pointer;transition:transform .3s}
+.flask-svg:hover{transform:scale(1.02)}
+.strip-wrap{position:relative;width:100%;max-width:340px;height:52px}
+.test-strip{
+  width:100%;height:38px;border-radius:6px;
+  background:linear-gradient(90deg,#c8b898 0%,#b8a888 100%);
+  border:1px solid rgba(0,0,0,.35);
+  display:flex;align-items:center;padding:0 6px;gap:3px;
+  transition:all .6s ease;cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  position:relative;overflow:hidden;
+}
+.pad{flex:1;min-width:0;height:26px;border-radius:3px;transition:background .6s ease;position:relative}
+.pad-label{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:.38rem;color:var(--text3);white-space:nowrap;font-family:'JetBrains Mono',monospace;pointer-events:none}
+.strip-label{font-size:.65rem;color:var(--text2);text-align:center;margin-top:.4rem}
+.dip-animation{animation:dipStrip .8s ease forwards}
+@keyframes dipStrip{0%{transform:translateY(0)}50%{transform:translateY(60px)}100%{transform:translateY(0)}}
+
+.results-box{background:var(--surface2);border-radius:var(--r-lg);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;width:100%;margin-top:.5rem}
+.result-row{display:flex;justify-content:space-between;align-items:center;font-size:.8rem}
+.result-row .r-label{color:var(--text2);font-weight:500}
+.result-pill{padding:.2rem .75rem;border-radius:99px;font-size:.7rem;font-weight:700;background:rgba(34,197,94,.15);color:var(--green)}
+.result-pill.amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.result-pill.red{background:rgba(239,68,68,.15);color:var(--red)}
+
+.slider-group{display:flex;flex-direction:column;gap:1.25rem}
+.slider-row{display:flex;flex-direction:column;gap:.5rem}
+.slider-header{display:flex;justify-content:space-between;align-items:center}
+.slider-name{font-size:.82rem;font-weight:700}
+.slider-val{font-size:.75rem;font-weight:700;font-family:'JetBrains Mono',monospace;background:var(--accent);color:#fff;padding:.15rem .6rem;border-radius:99px;min-width:3.5rem;text-align:center}
+.slider-val.negative{background:var(--surface3);color:var(--green)}
+input[type=range]{
+  -webkit-appearance:none;width:100%;height:6px;
+  background:var(--surface3);border-radius:99px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--accent);border:2px solid #fff;box-shadow:0 2px 8px rgba(79,110,247,.4);
+  cursor:pointer;transition:transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.2)}
+
+/* ── GLOSARIO ── */
+.glosario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.glosario-card{
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:var(--r-xl);padding:1.5rem;
+  cursor:pointer;transition:all .25s;
+}
+.glosario-card:hover{border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.glosario-card.expanded{
+  grid-column:span 1;
+  border-color:var(--accent);background:rgba(79,110,247,.06);
+  box-shadow:0 0 0 1px rgba(79,110,247,.2), var(--shadow-glow);
+}
+.gc-emoji{width:2.75rem;height:2.75rem;border-radius:.75rem;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.gc-term{font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+.gc-def{font-size:.77rem;color:var(--text2);line-height:1.6}
+.gc-divider{height:1px;background:var(--border);margin:1rem 0}
+.gc-detail{display:none;flex-direction:column;gap:.5rem}
+.glosario-card.expanded .gc-detail{display:flex}
+.gc-detail-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.75rem;color:var(--text2);line-height:1.5}
+.gc-detail-item .di-icon{font-size:.9rem;flex-shrink:0;margin-top:.05rem}
+
+/* ── EXAMEN ── */
+.exam-wrap{max-width:700px;margin:0 auto}
+.exam-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);padding:2.5rem;box-shadow:var(--shadow-md)}
+.exam-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.exam-tag{background:rgba(79,110,247,.15);color:var(--accent);font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .75rem;border-radius:99px}
+.exam-count{font-size:.72rem;color:var(--text3);font-weight:600}
+.exam-prog{height:.4rem;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:2rem}
+.exam-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:99px;transition:width .5s ease}
+.exam-q{font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;font-weight:700;line-height:1.4;margin-bottom:2rem}
+.exam-opts{display:flex;flex-direction:column;gap:.75rem}
+.exam-opt{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.25rem;border-radius:var(--r-lg);
+  border:1.5px solid var(--border2);background:transparent;
+  font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:600;
+  cursor:pointer;text-align:left;color:var(--text);
+  transition:all .18s;
+}
+.exam-opt:hover{border-color:var(--accent);background:rgba(79,110,247,.06)}
+.exam-opt.correct{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green);pointer-events:none}
+.exam-opt.wrong{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red);pointer-events:none}
+.exam-opt.disabled{opacity:.4;pointer-events:none}
+.opt-letter{
+  width:2rem;height:2rem;border-radius:.5rem;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;color:var(--text2);flex-shrink:0;transition:all .18s;
+  font-family:'JetBrains Mono',monospace;
+}
+.exam-opt:hover .opt-letter{background:rgba(79,110,247,.2);color:var(--accent)}
+.exam-opt.correct .opt-letter{background:rgba(34,197,94,.2);color:var(--green)}
+.exam-opt.wrong .opt-letter{background:rgba(239,68,68,.2);color:var(--red)}
+.exam-feedback{display:none;margin-top:1.25rem;padding:1rem;border-radius:var(--r-lg);font-size:.8rem;line-height:1.6}
+.exam-feedback.show{display:block}
+.exam-feedback.correct{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#86efac}
+.exam-feedback.wrong{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.exam-next{display:none;margin-top:1.25rem;width:100%}
+.exam-next.show{display:flex}
+
+.result-card{text-align:center;animation:fadeUp .5s ease both}
+.result-emoji{font-size:4rem;margin-bottom:1rem}
+.result-title{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;margin-bottom:.5rem}
+.result-sub{font-size:.85rem;color:var(--text2);margin-bottom:2rem}
+.score-display{
+  background:linear-gradient(135deg,var(--surface2),var(--surface3));
+  border:1px solid var(--border2);border-radius:var(--r-2xl);
+  padding:2rem;display:inline-block;min-width:16rem;margin-bottom:1.5rem;
+}
+.sd-label{font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.sd-num{font-family:'Bricolage Grotesque',sans-serif;font-size:4rem;font-weight:800;line-height:1}
+.sd-detail{margin-top:.75rem;font-size:.75rem;color:var(--text2);font-weight:600}
+
+/* ── REPORTE ── */
+.report-layout{display:grid;grid-template-columns:1fr 300px;gap:1.5rem}
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);padding:2rem}
+.form-section-title{font-size:.6rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem}
+.form-section-title span{color:var(--accent)}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.form-label{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.form-input,.form-select,.form-textarea{
+  padding:.75rem 1rem;background:var(--surface2);
+  border:1.5px solid var(--border2);border-radius:var(--r-lg);
+  font-family:'Space Grotesk',sans-serif;font-size:.85rem;color:var(--text);
+  transition:border-color .2s,box-shadow .2s;outline:none;width:100%;
+  appearance:none;-webkit-appearance:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12);
+}
+.form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.5rem}
+.form-textarea{resize:none;height:100px}
+.form-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.macro-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.quimica-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+
+.hints-card{background:linear-gradient(135deg,#0d1b4b,#1a0533);border:1px solid rgba(79,110,247,.2);border-radius:var(--r-xl);padding:1.5rem;margin-bottom:1rem}
+.hints-title{font-size:.6rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
+.hints-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.hints-list li{font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.5;display:flex;gap:.5rem}
+.hints-list .dot{color:var(--accent2);font-weight:900;flex-shrink:0}
+
+.emit-btn{
+  width:100%;background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;
+  padding:1.1rem;border-radius:var(--r-xl);font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;font-weight:700;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.75rem;
+  box-shadow:0 4px 20px rgba(79,110,247,.35);transition:opacity .2s, transform .2s;
+  margin-top:1.5rem;
+}
+.emit-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:99;animation:fadeUp .2s ease;backdrop-filter:blur(8px)}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-2xl);padding:2.5rem;max-width:520px;width:90%;box-shadow:var(--shadow-lg)}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+.modal-pre{font-family:'JetBrains Mono',monospace;font-size:.7rem;background:var(--bg);padding:1.25rem;border-radius:var(--r-lg);white-space:pre-wrap;line-height:1.8;color:#94a3b8;max-height:320px;overflow-y:auto;margin-bottom:1.5rem;border:1px solid var(--border)}
+.modal-close{width:100%;padding:.85rem;border-radius:var(--r-lg);background:var(--surface2);color:var(--text);border:1px solid var(--border2);font-family:'Space Grotesk',sans-serif;font-weight:700;cursor:pointer;font-size:.85rem;transition:background .2s}
+.modal-close:hover{background:var(--accent);border-color:transparent}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .stat-grid,.quick-grid{grid-template-columns:1fr 1fr}
+  .glosario-grid{grid-template-columns:1fr 1fr}
+  .report-layout{grid-template-columns:1fr}
+  .quimica-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:800px){
+  aside{width:220px}
+  .sim-grid,.form-row2,.macro-grid{grid-template-columns:1fr}
+}
+
+/* ── NOTIF PANEL ── */
+.notif-panel{
+  position:fixed;top:3.5rem;right:1rem;width:300px;z-index:50;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r-xl);box-shadow:var(--shadow-lg);
+  overflow:hidden;animation:fadeUp .2s ease;
+  display:none;
+}
+.notif-panel.open{display:block}
+.notif-head{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.notif-head-title{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+.notif-clear{font-size:.65rem;color:var(--accent);font-weight:700;cursor:pointer;border:none;background:none;font-family:inherit}
+.notif-list{max-height:280px;overflow-y:auto}
+.notif-item{padding:.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;transition:background .15s}
+.notif-item:hover{background:var(--surface2)}
+.notif-item.unread{background:rgba(79,110,247,.04)}
+.notif-icon{width:2rem;height:2rem;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.notif-text{font-size:.75rem;line-height:1.5;color:var(--text2)}
+.notif-text strong{color:var(--text);display:block;margin-bottom:.1rem;font-size:.78rem}
+.notif-time{font-size:.6rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:.2rem}
+.notif-empty{padding:2rem;text-align:center;font-size:.78rem;color:var(--text3)}
+
+/* ── EXAM ACCESS SCREEN ── */
+.access-screen{
+  min-height:calc(100vh - 4rem);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeUp .4s ease;
+}
+.access-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r-3xl);padding:3rem 2.5rem;
+  max-width:440px;width:100%;text-align:center;
+  box-shadow:0 0 60px rgba(79,110,247,.12);
+  position:relative;overflow:hidden;
+}
+.access-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(79,110,247,.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.access-logo{
+  width:5rem;height:5rem;border-radius:50%;
+  background:linear-gradient(135deg,#1a0533,#0d1b4b);
+  border:2px solid rgba(79,110,247,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1.5rem;
+  box-shadow:0 0 30px rgba(79,110,247,.2);
+}
+.access-inst{font-size:.55rem;font-weight:800;letter-spacing:.3em;color:var(--accent);text-transform:uppercase;margin-bottom:.3rem}
+.access-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:.3rem}
+.access-sub{font-size:.75rem;color:var(--text2);margin-bottom:2rem;line-height:1.5}
+.access-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.access-input{
+  width:100%;padding:.9rem 1.1rem;
+  background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r-lg);font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;color:var(--text);outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  text-align:center;letter-spacing:.02em;
+}
+.access-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+.access-input:disabled{opacity:.4;cursor:not-allowed}
+.access-btn{
+  width:100%;margin-top:1rem;padding:1rem;
+  background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;
+  border:none;border-radius:var(--r-lg);font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;font-weight:700;cursor:pointer;
+  transition:opacity .2s,transform .2s;
+  box-shadow:0 4px 20px rgba(79,110,247,.3);
+}
+.access-btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+.access-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.access-error{
+  margin-top:.9rem;padding:.75rem 1rem;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+  border-radius:var(--r-lg);font-size:.78rem;color:#fca5a5;
+  display:none;line-height:1.5;
+}
+.access-error.show{display:block;animation:fadeUp .3s ease}
+.access-info{margin-top:1.25rem;font-size:.65rem;color:var(--text3);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── SIDEBAR ── -->
+<aside>
+  <div class="sidebar-head">
+    <div class="sidebar-inst">CETIS 43-DGETI 2026</div>
+    <div class="sidebar-name">Lab. Álvarez 🔬</div>
+    <div class="sidebar-sub">v8.0 · SGC-LVA-2026</div>
+  </div>
+  <div class="xp-section">
+    <div class="xp-top">
+      <span class="xp-label">Tu Progreso</span>
+      <span class="xp-level" id="xpLevel">Nivel 1</span>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+    <div class="xp-val">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span id="xpDisplay">0</span> XP
+    </div>
+  </div>
+  <nav>
+    <button class="nav-item active" onclick="showTab('dashboard',this)">
+      <span class="nav-icon">📊</span>Dashboard
+    </button>
+    <button class="nav-item" onclick="showTab('simulador',this)">
+      <span class="nav-icon">🧪</span>Simulador 3D
+      <span class="nav-badge">Nuevo</span>
+    </button>
+    <button class="nav-item" onclick="showTab('glosario',this)">
+      <span class="nav-icon">📖</span>Glosario Interactivo
+    </button>
+    <button class="nav-item" onclick="showTab('examen',this)">
+      <span class="nav-icon">🎓</span>Examen Certificación
+    </button>
+    <button class="nav-item" onclick="showTab('reporte',this)">
+      <span class="nav-icon">📋</span>Generar Reporte
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sf-avatar">ÁL</div>
+    <div>
+      <div class="sf-name">Álvarez SSDC</div>
+      <div class="sf-sub">Docente · Lab. Virtual</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main>
+  <div class="top-bar">
+    <div class="top-title" id="topTitle">Dashboard</div>
+    <div class="top-right">
+      <div class="notif-btn" id="notifBtn" onclick="toggleNotif()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-dot" style="display:none"></div></div>
+      <div class="streak-badge">🔥 5 días</div>
+      <div class="user-chip">ES</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="tab active" id="tab-dashboard">
+      <div class="dash-hero">
+        <div>
+          <h2>¡Hola Estudiante! 👋</h2>
+          <p>Continúa tu práctica de análisis de orina. Tienes 2 simulaciones pendientes y un examen disponible.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="showTabBtn('simulador')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+              Simulador 3D
+            </button>
+            <button class="btn btn-ghost" onclick="showTabBtn('examen')">Examen Rápido</button>
+          </div>
+        </div>
+      </div>
+      <div class="quick-grid">
+        <div class="quick-card" onclick="showTabBtn('simulador')">
+          <div class="qc-icon">🧫</div>
+          <div class="qc-name">Simulador de Tiras</div>
+          <div class="qc-sub">Practica con pacientes virtuales</div>
+        </div>
+        <div class="quick-card featured" onclick="showTabBtn('examen')">
+          <div class="qc-icon">📝</div>
+          <div class="qc-name">Examen Rápido</div>
+          <div class="qc-sub">6 preguntas · 5 minutos</div>
+        </div>
+        <div class="quick-card" onclick="showTabBtn('reporte')">
+          <div class="qc-icon">📄</div>
+          <div class="qc-name">Nuevo Reporte</div>
+          <div class="qc-sub">Captura resultados de práctica</div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(239,68,68,.12)">🎯</div>
+          <div><div class="sc-label">Precisión</div><div class="sc-val">87%</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(34,197,94,.12)">✅</div>
+          <div><div class="sc-label">Evaluaciones</div><div class="sc-val">12/20</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(6,182,212,.12)">⏱️</div>
+          <div><div class="sc-label">Tiempo Pract.</div><div class="sc-val">4.5h</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon" style="background:rgba(245,158,11,.12)">🏆</div>
+          <div><div class="sc-label">Logros</div><div class="sc-val">8/15</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SIMULADOR 3D ── -->
+    <div class="tab" id="tab-simulador">
+      <div class="sim-grid">
+        <!-- Panel izquierdo: visual -->
+        <div class="sim-panel">
+          <div class="sim-panel-title">🔬 <span>Laboratorio Virtual</span></div>
+          <div class="flask-wrap">
+            <svg class="flask-svg" id="flaskSvg" width="180" height="220" viewBox="0 0 180 220" onclick="dipStrip()" title="Haz clic para sumergir la tira">
+              <defs>
+                <linearGradient id="flaskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" id="gradStop1" stop-color="#eab308" stop-opacity=".9"/>
+                  <stop offset="100%" id="gradStop2" stop-color="#ca8a04" stop-opacity=".95"/>
+                </linearGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <clipPath id="flaskClip"><path d="M60 30 L60 90 L20 160 Q10 180 15 195 Q20 215 50 215 L130 215 Q160 215 165 195 Q170 180 160 160 L120 90 L120 30 Z"/></clipPath>
+              </defs>
+              <!-- Stopper -->
+              <rect x="65" y="18" width="50" height="16" rx="4" fill="#444" stroke="#555" stroke-width="1"/>
+              <!-- Flask body outline -->
+              <path d="M60 30 L60 90 L20 160 Q10 180 15 195 Q20 215 50 215 L130 215 Q160 215 165 195 Q170 180 160 160 L120 90 L120 30 Z" fill="rgba(30,40,60,.5)" stroke="#2d3f5c" stroke-width="2"/>
+              <!-- Liquid fill -->
+              <rect x="0" y="90" width="200" height="130" fill="url(#flaskGrad)" id="liquidFill" clip-path="url(#flaskClip)" opacity=".85"/>
+              <!-- Liquid sheen -->
+              <path d="M28 160 Q60 145 90 155 Q120 165 152 150" stroke="rgba(255,255,255,.2)" stroke-width="2" fill="none" id="liquidSheen"/>
+              <!-- Flask highlight -->
+              <path d="M65 35 L65 85" stroke="rgba(255,255,255,.15)" stroke-width="4" stroke-linecap="round"/>
+              <!-- Measurement lines -->
+              <line x1="118" y1="120" x2="128" y2="120" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+              <line x1="122" y1="145" x2="132" y2="145" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+              <line x1="118" y1="170" x2="128" y2="170" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+            </svg>
+            <div class="strip-wrap">
+              <div class="test-strip" id="testStrip" onclick="dipStrip()">
+                <div class="pad" id="p1" style="background:#d4c5a0"><span class="pad-label">LEU</span></div>
+                <div class="pad" id="p2" style="background:#f0e8d8"><span class="pad-label">NIT</span></div>
+                <div class="pad" id="p3" style="background:#e8d5a8"><span class="pad-label">URO</span></div>
+                <div class="pad" id="p4" style="background:#dce896"><span class="pad-label">PRO</span></div>
+                <div class="pad" id="p5" style="background:#f97316"><span class="pad-label">pH</span></div>
+                <div class="pad" id="p6" style="background:#fdba74"><span class="pad-label">SAN</span></div>
+                <div class="pad" id="p7" style="background:#bae6fd"><span class="pad-label">DEN</span></div>
+                <div class="pad" id="p8" style="background:#e8d5a8"><span class="pad-label">CET</span></div>
+                <div class="pad" id="p9" style="background:#f0e8d8"><span class="pad-label">BIL</span></div>
+                <div class="pad" id="p10" style="background:#93c5fd"><span class="pad-label">GLU</span></div>
+              </div>
+              <div class="strip-label" id="stripLabel">Haz clic en la tira para sumergirla en la muestra</div>
+            </div>
+            <div class="results-box">
+              <div class="result-row"><span class="r-label">Color estimado</span><span class="result-pill" id="rColorEst">Normal</span></div>
+              <div class="result-row"><span class="r-label">Espuma</span><span class="result-pill" id="rEspumaEst">Fugaz</span></div>
+              <div class="result-row"><span class="r-label">Olor</span><span class="result-pill" id="rOlorEst">Sui géneris</span></div>
+              <div class="result-row"><span class="r-label">Interpretación</span><span class="result-pill" id="rInterp">Sin alteraciones</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Panel derecho: controles -->
+        <div class="sim-panel">
+          <div class="sim-panel-title">⚙️ <span>Parámetros de la Muestra</span></div>
+          <div class="slider-group">
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Concentración (Densidad)</span>
+                <span class="slider-val" id="sv-dens">1.0150</span>
+              </div>
+              <input type="range" id="sl-dens" min="1001" max="1035" value="1015" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">pH</span>
+                <span class="slider-val" id="sv-ph">6.0</span>
+              </div>
+              <input type="range" id="sl-ph" min="45" max="85" value="60" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Glucosa (mg/dL)</span>
+                <span class="slider-val" id="sv-glu">0</span>
+              </div>
+              <input type="range" id="sl-glu" min="0" max="500" value="0" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Proteínas (mg/dL)</span>
+                <span class="slider-val" id="sv-prot">0</span>
+              </div>
+              <input type="range" id="sl-prot" min="0" max="300" value="0" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Sangre (Eritrocitos)</span>
+                <span class="slider-val negative" id="sv-sang">Negativo</span>
+              </div>
+              <input type="range" id="sl-sang" min="0" max="3" value="0" step="1" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Leucocitos (/µL)</span>
+                <span class="slider-val negative" id="sv-leuc">Negativo</span>
+              </div>
+              <input type="range" id="sl-leuc" min="0" max="3" value="0" step="1" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Nitritos</span>
+                <span class="slider-val negative" id="sv-nitr">Negativo</span>
+              </div>
+              <input type="range" id="sl-nitr" min="0" max="1" value="0" step="1" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Bilirrubina</span>
+                <span class="slider-val negative" id="sv-bili">Negativo</span>
+              </div>
+              <input type="range" id="sl-bili" min="0" max="3" value="0" step="1" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Urobilinógeno</span>
+                <span class="slider-val" id="sv-urob" style="background:var(--surface3);color:var(--green)">Normal</span>
+              </div>
+              <input type="range" id="sl-urob" min="0" max="3" value="0" step="1" oninput="updateSim()">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span class="slider-name">Cetonas</span>
+                <span class="slider-val negative" id="sv-ceto">Negativo</span>
+              </div>
+              <input type="range" id="sl-ceto" min="0" max="3" value="0" step="1" oninput="updateSim()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GLOSARIO ── -->
+    <div class="tab" id="tab-glosario">
+      <div class="glosario-grid" id="glosarioGrid"></div>
+    </div>
+
+    <!-- ── EXAMEN ── -->
+    <div class="tab" id="tab-examen">
+
+      <!-- ACCESS SCREEN -->
+      <div id="examAccess" class="access-screen">
+        <div class="access-card">
+          <div class="access-logo">🔬</div>
+          <div class="access-inst">CETIS 43-DGETI · 2026</div>
+          <div class="access-title">Lab. Álvarez</div>
+          <div class="access-sub">Examen de Certificación<br>Análisis Citoquímico · Grupo 4A</div>
+          <div class="access-divider"></div>
+          <input
+            class="access-input"
+            id="accessInput"
+            type="text"
+            placeholder="Escribe tu nombre completo"
+            autocomplete="off"
+            onkeydown="if(event.key==='Enter')verifyAccess()"
+          >
+          <button class="access-btn" id="accessBtn" onclick="verifyAccess()">
+            🔐 Verificar identidad
+          </button>
+          <div class="access-error" id="accessError">
+            ❌ Acceso denegado. Tu nombre no está en la lista de alumnos registrados.
+          </div>
+          <div class="access-info">
+            Solo alumnos del Grupo 4A pueden presentar este examen.<br>
+            El examen se permite <strong>una sola vez</strong> por sesión.
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAM CONTENT (hidden until verified) -->
+      <div id="examContent" style="display:none">
+        <div class="exam-wrap">
+          <div class="exam-card" id="examCard"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── REPORTE ── -->
+    <div class="tab" id="tab-reporte">
+      <div class="report-layout">
+        <div>
+          <div class="form-card" style="margin-bottom:1.25rem">
+            <div class="form-section-title"><span>I.</span> Identificación</div>
+            <div class="form-row2">
+              <div class="form-group">
+                <label class="form-label">Paciente</label>
+                <input class="form-input" id="rPaciente" type="text" placeholder="Nombre completo">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fecha Registro (2026)</label>
+                <input class="form-input" id="rFecha" type="date">
+              </div>
+            </div>
+          </div>
+          <div class="form-card" style="margin-bottom:1.25rem">
+            <div class="form-section-title"><span>II.</span> Evaluación Macroscópica</div>
+            <div class="macro-grid">
+              <div class="form-group">
+                <label class="form-label">Color</label>
+                <select class="form-select" id="rColor">
+                  <option>Incoloro</option><option>Amarillo Pálido</option>
+                  <option selected>Amarillo</option><option>Ámbar</option>
+                  <option>Rojo (Hematuria)</option><option>Marrón (Coluria)</option>
+                  <option>Verde / Azul</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Aspecto</label>
+                <select class="form-select" id="rAspecto">
+                  <option selected>Límpido</option><option>Opalescente</option>
+                  <option>Ligeramente Turbio</option><option>Turbio</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Olor</label>
+                <select class="form-select" id="rOlor">
+                  <option selected>Sui Generis</option><option>Fétido</option>
+                  <option>Amoniacal</option><option>Frutal (Cetosis)</option>
+                  <option>Inodoro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Espuma</label>
+                <select class="form-select" id="rEspuma">
+                  <option selected>Blanca Fugaz</option><option>Blanca Persistente</option>
+                  <option>Amarilla</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-card">
+            <div class="form-section-title"><span>III.</span> Evaluación Química Spinreact</div>
+            <div class="quimica-grid">
+              <div class="form-group">
+                <label class="form-label">Glucosa</label>
+                <select class="form-select" id="rGlucosa">
+                  <option selected>Negativo</option>
+                  <option>+ (~100 mg/dL)</option><option>++ (~250 mg/dL)</option>
+                  <option>+++ (&gt;500 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Proteínas</label>
+                <select class="form-select" id="rProteinas">
+                  <option selected>Negativo</option><option>Trazas (~15 mg/dL)</option>
+                  <option>+ (30 mg/dL)</option><option>++ (100 mg/dL)</option>
+                  <option>+++ (&gt;300 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Leucocitos</label>
+                <select class="form-select" id="rLeucocitos">
+                  <option selected>Negativo</option><option>+ (15 leuc/µL)</option>
+                  <option>++ (70 leuc/µL)</option><option>+++ (&gt;500 leuc/µL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nitritos</label>
+                <select class="form-select" id="rNitritos">
+                  <option selected>Negativo</option><option>Positivo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bilirrubina</label>
+                <select class="form-select" id="rBilirrubina">
+                  <option selected>Negativo</option><option>+ (~0.5 mg/dL)</option>
+                  <option>++ (~1 mg/dL)</option><option>+++ (&gt;2 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Urobilinógeno</label>
+                <select class="form-select" id="rUrobilinogeno">
+                  <option selected>Normal (0.1–1 EU/dL)</option>
+                  <option>+ (2 EU/dL)</option><option>++ (4 EU/dL)</option>
+                  <option>+++ (&gt;8 EU/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sangre</label>
+                <select class="form-select" id="rSangre">
+                  <option selected>Negativo</option><option>+ (trazas / hemolizada)</option>
+                  <option>++ (moderada)</option><option>+++ (intensa)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cetonas</label>
+                <select class="form-select" id="rCetonas">
+                  <option selected>Negativo</option><option>+ (5 mg/dL)</option>
+                  <option>++ (15 mg/dL)</option><option>+++ (&gt;40 mg/dL)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Densidad</label>
+                <select class="form-select" id="rDensidad">
+                  <option>1.005</option><option>1.010</option>
+                  <option selected>1.015</option><option>1.020</option>
+                  <option>1.025</option><option>1.030</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observaciones Adicionales</label>
+              <textarea class="form-textarea" id="rQuimico" placeholder="Observaciones clínicas adicionales..."></textarea>
+            </div>
+            <button class="emit-btn" onclick="emitirCertificado()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Emitir Certificado LVA 2026
+            </button>
+          </div>
+        </div>
+        <div>
+          <div class="hints-card">
+            <div class="hints-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Sugerencias Spinreact
+            </div>
+            <ul class="hints-list">
+              <li><span class="dot">›</span><span>Infección: Nitritos (+), Leucocitos (+++)</span></li>
+              <li><span class="dot">›</span><span>Metabólico: Glucosa (+++), Cetonas (++)</span></li>
+              <li><span class="dot">›</span><span>Daño Renal: Proteína (+++), Sangre (+)</span></li>
+              <li><span class="dot">›</span><span>Hepatopatía: Bilirrubina (++), Urobilinógeno (+)</span></li>
+              <li><span class="dot">›</span><span>Leer leucocitos a los 120 seg (Spinreact)</span></li>
+            </ul>
+          </div>
+          <div class="form-card">
+            <div class="form-section-title"><span>Ref.</span> Valores Normales</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.75rem">
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Densidad</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">1.005–1.030</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">pH</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">4.5 – 8.5</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Glucosa</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">Negativo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Proteínas</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">Negativo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Leucocitos</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">&lt; 10/µL</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Nitritos</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">Negativo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Bilirrubina</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">Negativo</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--text2)">Urobilinógeno</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">0.1–1 EU/dL</span></div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0"><span style="color:var(--text2)">Sangre</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)">Negativo</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-title">📄 Certificado LVA 2026 Generado</div>
+    <pre class="modal-pre" id="modalContent"></pre>
+    <div style="display:flex;gap:.75rem;">
+      <button class="modal-close" onclick="closeModal()" style="flex:1;">Cerrar</button>
+      <button class="modal-close" onclick="downloadPDF()" style="flex:1;background:var(--accent);border-color:transparent;">⬇ Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── NAVIGATION ──
+const titleMap = {
+  dashboard:'Dashboard', simulador:'Simulador 3D',
+  glosario:'Glosario Interactivo', examen:'Examen de Certificación', reporte:'Generar Reporte'
+};
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('topTitle').textContent = titleMap[id]||id;
+  if(id==='examen') {
+    // Always show access screen when navigating to exam tab
+    // (unless already verified in this session)
+    if(!sessionVerified) {
+      document.getElementById('examAccess').style.display='flex';
+      document.getElementById('examContent').style.display='none';
+    }
+  }
+  if(id==='glosario') renderGlosario();
+}
+function showTabBtn(id) {
+  const btns = document.querySelectorAll('.nav-item');
+  const ids = ['dashboard','simulador','glosario','examen','reporte'];
+  const idx = ids.indexOf(id);
+  if(idx>=0) showTab(id, btns[idx]);
+}
+
+// Set today date
+document.getElementById('rFecha').value = new Date().toISOString().split('T')[0];
+
+// ── SIMULADOR 3D ──
+const flaskColors = {
+  normal: {g1:'#facc15', g2:'#ca8a04'},
+  pale:   {g1:'#fde68a', g2:'#fbbf24'},
+  amber:  {g1:'#d97706', g2:'#b45309'},
+  brown:  {g1:'#92400e', g2:'#78350f'},
+  red:    {g1:'#ef4444', g2:'#b91c1c'},
+};
+
+// ── Colores Spinreact 10 parámetros (escala cromática del fabricante) ──
+const spinreact = {
+  leuco: ['#d4c5a0','#e8b4c0','#d47ea0','#9333ea'],  // crema → lila → violeta
+  nitr:  ['#f0e8d8','#f472b6'],                        // blanco-crema → rosa intenso
+  urob:  ['#e8d5a8','#fb923c','#f97316','#ea580c'],    // crema → naranja oscuro
+  prot:  ['#dce896','#b0d44a','#4ade80','#16a34a'],    // amarillo-verde → verde oscuro
+  ph:    ['#f97316','#fbbf24','#84cc16','#06b6d4'],    // naranja → azul-verde
+  sang:  ['#fdba74','#86efac','#22c55e','#15803d'],    // salmón → verde oscuro
+  dens:  ['#bae6fd','#67e8f9','#a3e635','#84cc16'],    // azul pálido → verde
+  ceto:  ['#e8d5a8','#d8b4fe','#c084fc','#9333ea'],    // crema → morado
+  bili:  ['#f0e8d8','#d4b483','#a07840','#7c5430'],    // crema → marrón oscuro
+  glu:   ['#93c5fd','#34d399','#22c55e','#15803d'],    // azul → verde oscuro
+};
+
+let stripped = false;
+
+function updateSim() {
+  const densRaw = parseInt(document.getElementById('sl-dens').value);
+  const ph      = parseInt(document.getElementById('sl-ph').value)/10;
+  const glu     = parseInt(document.getElementById('sl-glu').value);
+  const prot    = parseInt(document.getElementById('sl-prot').value);
+  const sang    = parseInt(document.getElementById('sl-sang').value);
+  const leuc    = parseInt(document.getElementById('sl-leuc').value);
+  const nitr    = parseInt(document.getElementById('sl-nitr').value);
+  const bili    = parseInt(document.getElementById('sl-bili').value);
+  const urob    = parseInt(document.getElementById('sl-urob').value);
+  const ceto    = parseInt(document.getElementById('sl-ceto').value);
+
+  document.getElementById('sv-dens').textContent = '1.0'+String(densRaw-1000).padStart(3,'0');
+  document.getElementById('sv-ph').textContent   = ph.toFixed(1);
+  document.getElementById('sv-glu').textContent  = glu;
+  document.getElementById('sv-prot').textContent = prot;
+  const posL=['Negativo','+','++','+++'];
+  const urobL=['Normal (≤1)','+  (2 EU/dL)','++ (4 EU/dL)','+++ (≥8)'];
+  document.getElementById('sv-sang').textContent = posL[sang];
+  document.getElementById('sv-leuc').textContent = posL[leuc];
+  document.getElementById('sv-nitr').textContent = nitr?'Positivo':'Negativo';
+  document.getElementById('sv-bili').textContent = posL[bili];
+  document.getElementById('sv-urob').textContent = urobL[urob];
+  document.getElementById('sv-ceto').textContent = posL[ceto];
+  document.getElementById('sv-sang').className = 'slider-val '+(sang===0?'negative':'');
+  document.getElementById('sv-leuc').className = 'slider-val '+(leuc===0?'negative':'');
+  document.getElementById('sv-nitr').className = 'slider-val '+(nitr===0?'negative':'');
+  document.getElementById('sv-bili').className = 'slider-val '+(bili===0?'negative':'');
+  document.getElementById('sv-ceto').className = 'slider-val '+(ceto===0?'negative':'');
+
+  // Flask color
+  let col = densRaw < 1008 ? 'pale' : 'normal';
+  if(ceto>=2 || glu>=250) col='amber';
+  if(bili>=2) col='brown';
+  if(sang>=2) col='red';
+  if(densRaw>1025 && sang===0 && bili<2) col='amber';
+  const c = flaskColors[col];
+  document.getElementById('gradStop1').setAttribute('stop-color', c.g1);
+  document.getElementById('gradStop2').setAttribute('stop-color', c.g2);
+
+  // Estimaciones físicas
+  const colorEl  = document.getElementById('rColorEst');
+  const espumaEl = document.getElementById('rEspumaEst');
+  const olorEl   = document.getElementById('rOlorEst');
+  const interpEl = document.getElementById('rInterp');
+
+  if(sang>=2){colorEl.textContent='Rojo / Hematuria';setClass(colorEl,'red')}
+  else if(bili>=2){colorEl.textContent='Marrón (Coluria)';setClass(colorEl,'red')}
+  else if(densRaw>1025){colorEl.textContent='Ámbar concentrado';setClass(colorEl,'amber')}
+  else if(densRaw<1008){colorEl.textContent='Incoloro / Pálido';setClass(colorEl,'amber')}
+  else{colorEl.textContent='Amarillo normal';setClass(colorEl,'')}
+
+  if(prot>100){espumaEl.textContent='Blanca Persistente';setClass(espumaEl,'amber')}
+  else if(bili>=1){espumaEl.textContent='Amarilla';setClass(espumaEl,'amber')}
+  else{espumaEl.textContent='Fugaz';setClass(espumaEl,'')}
+
+  if(ceto>=2){olorEl.textContent='Frutal (Acetona)';setClass(olorEl,'amber')}
+  else if(leuc>=2||nitr>=1){olorEl.textContent='Fétido/Amoniacal';setClass(olorEl,'red')}
+  else{olorEl.textContent='Sui géneris';setClass(olorEl,'')}
+
+  let interps=[];
+  if(glu>=50) interps.push('Glucosuria');
+  if(prot>=30) interps.push('Proteinuria');
+  if(leuc>=1&&nitr>=1) interps.push('IVU probable');
+  else if(leuc>=2) interps.push('Leucocituria');
+  if(sang>=1) interps.push('Hematuria');
+  if(ceto>=1) interps.push('Cetonuria');
+  if(bili>=1) interps.push('Bilirrubinuria');
+  if(urob>=2) interps.push('Urobilinogen↑');
+  if(!interps.length){interpEl.textContent='Sin alteraciones';setClass(interpEl,'')}
+  else{interpEl.textContent=interps.slice(0,2).join(' · ');setClass(interpEl,interps.length>1?'amber':'red')}
+
+  if(stripped) updatePads(glu,prot,sang,leuc,nitr,bili,urob,ceto,ph,densRaw);
+}
+
+function setClass(el,cls){el.className='result-pill '+(cls||'')}
+
+function updatePads(glu,prot,sang,leuc,nitr,bili,urob,ceto,ph,densRaw){
+  const gi   = glu>=250?3:glu>=100?2:glu>=50?1:0;
+  const pri  = prot>=200?3:prot>=100?2:prot>=30?1:0;
+  const phI  = ph<5.5?0:ph<6.5?1:ph<7.5?2:3;
+  const denI = densRaw<1007?0:densRaw<1015?1:densRaw<1025?2:3;
+  document.getElementById('p1').style.background  = spinreact.leuco[leuc];
+  document.getElementById('p2').style.background  = spinreact.nitr[nitr];
+  document.getElementById('p3').style.background  = spinreact.urob[urob];
+  document.getElementById('p4').style.background  = spinreact.prot[pri];
+  document.getElementById('p5').style.background  = spinreact.ph[phI];
+  document.getElementById('p6').style.background  = spinreact.sang[sang];
+  document.getElementById('p7').style.background  = spinreact.dens[denI];
+  document.getElementById('p8').style.background  = spinreact.ceto[ceto];
+  document.getElementById('p9').style.background  = spinreact.bili[bili];
+  document.getElementById('p10').style.background = spinreact.glu[gi];
+}
+
+function dipStrip() {
+  const strip = document.getElementById('testStrip');
+  const lbl = document.getElementById('stripLabel');
+  strip.classList.add('dip-animation');
+  setTimeout(()=>{
+    strip.classList.remove('dip-animation');
+    stripped = true;
+    const glu=parseInt(document.getElementById('sl-glu').value);
+    const prot=parseInt(document.getElementById('sl-prot').value);
+    const sang=parseInt(document.getElementById('sl-sang').value);
+    const leuc=parseInt(document.getElementById('sl-leuc').value);
+    const nitr=parseInt(document.getElementById('sl-nitr').value);
+    const bili=parseInt(document.getElementById('sl-bili').value);
+    const urob=parseInt(document.getElementById('sl-urob').value);
+    const ceto=parseInt(document.getElementById('sl-ceto').value);
+    const ph=parseInt(document.getElementById('sl-ph').value)/10;
+    const densRaw=parseInt(document.getElementById('sl-dens').value);
+    updatePads(glu,prot,sang,leuc,nitr,bili,urob,ceto,ph,densRaw);
+    lbl.textContent = '✓ Tira analizada — Resultados actualizados';
+    lbl.style.color = '#22c55e';
+    if(!simXpAwarded){simXpAwarded=true;addXP(250,'simulador');}
+  }, 900);
+}
+
+// ── GLOSARIO ──
+const glosarioData = [
+  {emoji:'🟤',term:'Coluria',def:'Coloración oscura de la orina (similar al té o refresco de cola) por presencia de bilirrubina conjugada.',
+   details:['🔍 Espuma amarilla persistente','💡 Asociado a: Hepatopatías, obstrucción biliar','🧪 Tira reactiva: Bilirrubina (+)']},
+  {emoji:'🔴',term:'Hematuria',def:'Presencia de sangre (eritrocitos) en la orina. Puede ser macroscópica o microscópica.',
+   details:['🔍 Orina color rojo o rosado','💡 Causas: litiasis, tumor, infección, trauma renal','🧪 Tira reactiva: Sangre (+++)']},
+  {emoji:'⚪',term:'Piuria',def:'Presencia de pus o leucocitos abundantes (>5 x campo) en la orina, indicativo de infección.',
+   details:['🔍 Orina turbia o ligeramente opalescente','💡 Asociada a: IVU bacteriana, pielonefritis','🧪 Tira reactiva: Leucocitos (+), Nitritos (+)']},
+  {emoji:'🍎',term:'Cetonuria',def:'Aparición de cuerpos cetónicos en la orina. Olor característico a manzana madura.',
+   details:['🔍 Olor frutal o a acetona','💡 Causas: DM descompensada, ayuno, cetogénica','🧪 Tira reactiva: Cetonas (++)']},
+  {emoji:'🍯',term:'Glucosuria',def:'Presencia de glucosa cuando supera umbral renal (~180 mg/dL). Orina dulce (historicamente).',
+   details:['🔍 Orina sin cambio de color','💡 Asociada a: DM tipo 1-2, síndrome de Fanconi','🧪 Tira reactiva: Glucosa (++)']},
+  {emoji:'🔵',term:'Proteinuria',def:'Presencia anormal de proteínas. Espuma blanca persistente al agitar.',
+   details:['🔍 Espuma blanca persistente','💡 Causas: daño glomerular, nefropatía diabética','🧪 Tira reactiva: Proteínas (+++)']},
+  {emoji:'🟡',term:'Densidad Urinaria',def:'Medida de la capacidad de concentración y dilución renal. Rango normal: 1.005–1.030.',
+   details:['🔍 Correlaciona con color e hidratación','💡 Alta >1.030: deshidratación; Baja <1.005: diabetes insípida','🧪 Tira reactiva: Densidad']},
+  {emoji:'🟣',term:'Bilirrubinuria',def:'Bilirrubina conjugada detectada en orina. Indica enfermedad hepática o colestasis.',
+   details:['🔍 Orina marrón oscuro o verde','💡 Causas: hepatitis, cirrosis, obstrucción biliar','🧪 Tira reactiva: Bilirrubina (++)']},
+  {emoji:'🟠',term:'Urobilinogenuria',def:'Aumento de urobilinógeno indica aumento de destrucción eritrocitaria o disfunción hepática.',
+   details:['🔍 Orina con coloración anaranjada','💡 Causas: anemia hemolítica, insuficiencia hepática','🧪 Tira reactiva: Urobilinógeno (+++)']},
+];
+
+let expandedIdx = null;
+function renderGlosario() {
+  const g = document.getElementById('glosarioGrid');
+  g.innerHTML = glosarioData.map((item,i)=>`
+    <div class="glosario-card ${expandedIdx===i?'expanded':''}" onclick="toggleCard(${i})">
+      <div class="gc-emoji">${item.emoji}</div>
+      <div class="gc-term">${item.term}</div>
+      <div class="gc-def">${item.def}</div>
+      ${expandedIdx===i?`<div class="gc-divider"></div>
+      <div class="gc-detail">
+        ${item.details.map(d=>`<div class="gc-detail-item"><span class="di-icon">${d.split(' ')[0]}</span><span>${d.split(' ').slice(1).join(' ')}</span></div>`).join('')}
+      </div>`:``}
+    </div>
+  `).join('');
+}
+function toggleCard(i){
+  expandedIdx = expandedIdx===i ? null : i;
+  renderGlosario();
+}
+
+// ── EXAMEN ──
+const questions = [
+  // ── PREGUNTAS DE CONOCIMIENTO (1-7) ──
+  {q:'Un paciente presenta orina de color marrón oscuro con espuma amarilla persistente. ¿Qué parámetro químico esperarías positivo?',
+   opts:[{t:'Glucosa (+++)',c:false},{t:'Bilirrubina (++)',c:true},{t:'Cetonas (+)',c:false},{t:'Leucocitos (+++)',c:false}]},
+  {q:'¿Cuál es el tiempo de lectura CORRECTO para los leucocitos en tiras Spinreact?',
+   opts:[{t:'Inmediato (0 seg)',c:false},{t:'60–120 segundos',c:true},{t:'5 minutos',c:false},{t:'30 segundos exactos',c:false}]},
+  {q:'En un paciente geriátrico con confusión mental y nitritos (+), la sospecha diagnóstica es:',
+   opts:[{t:'IVU Atípica (sin fiebre)',c:true},{t:'Diabetes Mellitus Tipo 1',c:false},{t:'Glomerulonefritis aguda',c:false},{t:'Síndrome nefrótico',c:false}]},
+  {q:'¿Qué parámetro físico se asocia a una Proteinuria masiva (>300 mg/dL)?',
+   opts:[{t:'Color rojo brillante',c:false},{t:'Espuma blanca persistente',c:true},{t:'Olor amoniacal fuerte',c:false},{t:'Aspecto verdoso',c:false}]},
+  {q:'Paciente con piuria (pus en orina). ¿Qué característica FÍSICA NO esperarías?',
+   opts:[{t:'Turbidez marcada',c:false},{t:'Olor fétido',c:false},{t:'Espuma blanca persistente',c:true},{t:'Sedimento al decantar',c:false}]},
+  {q:'¿Qué valor de pH urinario sugiere infección por bacterias productoras de ureasa (ej. Proteus mirabilis)?',
+   opts:[{t:'pH 4.5 – 5.5 (muy ácido)',c:false},{t:'pH 6.0 – 6.5 (normal)',c:false},{t:'pH 8.0 – 9.0 (muy alcalino)',c:true},{t:'pH 7.0 (neutro)',c:false}]},
+  {q:'Al interpretar la tira Spinreact, el pad de urobilinógeno presenta naranja intenso (+++) con bilirrubina NEGATIVA. ¿Qué sugiere?',
+   opts:[{t:'Obstrucción biliar extrahepática',c:false},{t:'Anemia hemolítica o hepatitis viral inicial',c:true},{t:'Colestasis intrahepática severa',c:false},{t:'Síndrome de Gilbert leve',c:false}]},
+  // ── CASOS CLÍNICOS (8-10) ──
+  {q:'CASO CLÍNICO 1 — Femenino, 28 años, embarazo de 32 semanas. Acude por ardor al orinar, fiebre 38.5°C y dolor lumbar bilateral. EGO: orina turbia, nitritos (+), leucocitos (+++), proteínas trazas, bacterias abundantes. ¿Cuál es el diagnóstico más probable?',
+   opts:[{t:'Glomerulonefritis por estreptococo',c:false},{t:'Pielonefritis gestacional (IVU alta)',c:true},{t:'Preeclampsia severa',c:false},{t:'Litiasis renal obstructiva',c:false}]},
+  {q:'CASO CLÍNICO 2 — Masculino, 65 años, DM tipo 2 con mal control. Refiere poliuria, polidipsia y visión borrosa de 3 días. Glucosa sérica: 380 mg/dL. EGO: glucosa (+++), densidad 1.030, proteínas (+), cetonas NEGATIVAS. ¿Qué explica la ausencia de cetonas pese a la hiperglucemia severa?',
+   opts:[{t:'El riñón excreta cetonas antes de aparecer en orina',c:false},{t:'En DM tipo 2 hay insulina residual que inhibe la lipólisis cetogénica',c:true},{t:'La glucosuria elimina los cuerpos cetónicos',c:false},{t:'La densidad alta neutraliza la reacción de la almohadilla',c:false}]},
+  {q:'CASO CLÍNICO 3 — Hombre, 45 años, ictericia progresiva, coluria, acolia y prurito generalizado de 3 semanas. Sin fiebre. EGO: bilirrubina (+++), urobilinógeno NEGATIVO/ausente, color marrón oscuro intenso. ¿Cuál es la causa más probable del patrón urinario?',
+   opts:[{t:'Hepatitis viral aguda fase inicial',c:false},{t:'Anemia hemolítica crónica',c:false},{t:'Obstrucción biliar extrahepática (colestasis total)',c:true},{t:'Insuficiencia hepática terminal con cirrosis',c:false}]},
+];
+
+// ── EXAM ENGINE ──
+let examStep=0, examScore=0, examAnswered=false;
+let activeStudent = '';
+let sessionVerified = false;
+let examUsed = false; // single attempt per session
+
+// ── STUDENT LIST (Grupo 4A · CETIS 43 · 2026) ──
+const MASTER_KEY = 'enrique alvarez';
+const studentList = [
+  'ABASOLO HERNANDEZ OSCAR FABIAN',
+  'BARRERA CRUZ RICARDO ARIEL',
+  'BARRIOS RAFAEL ALONDRA ELISABETH',
+  'BAUTISTA GARCIA MARIO ALBERTO',
+  'CASPETA HERRERA LEONARDO ADOLFO',
+  'CASTAÑEDA RAMIREZ DANNAILA GUADALUPE',
+  'CRUZ URIBE MARIA LUISA',
+  'CUADROS SANCHEZ JUAN ALEXANDER',
+  'DURAN CASPETA DIEGO ANDREE',
+  'ESCOBAR SIERRA CINTHIA YAMILETH',
+  'EVARISTO VIVAS JAQUELINE',
+  'FIGUEROA DUARTE ALIZEE YAKSY',
+  'GARCIA MALDONADO DYLAN',
+  'GARCIA SANTIAGO MARIA FERNANDA',
+  'GARCIA URIOSTEGUI LEONARDO JESUS',
+  'GONZAGA GARCIA FRANNY ITTAI',
+  'GONZALEZ BELLO AXEL RAFAEL',
+  'GONZALEZ FLORES KAREN MICHELL',
+  'GONZALEZ KORSBAEK CHELSY SCARLETT',
+  'GUADARRAMA RODRIGUEZ MATILDA ALIZE',
+  'GUTIERREZ CAMERO STEPHANIE SOFIA',
+  'HERNANDEZ DIAZ DEYSI THALIA',
+  'HERNANDEZ SOLANO LLUVIA LIZETH',
+  'LARA MEDINA JONATAN ELADIO',
+  'MEDINA GONZALEZ AKEMI SULEM',
+  'MIRANDA AGUILAR MARIA BELEN',
+  'MIRANDA DURAN GISELLE',
+  'MORALES HERNANDEZ PERLA CITLALY',
+  'MORANTE FERNANDEZ MELANI ALEXA',
+  'NAJERA VERGARA DANA VALERIA',
+  'ONOFRE DAMACIO YOSHIMI ZAYURI',
+  'ONTAÑON ALVARADO MARIANA',
+  'PEREZ PERALTA ALEXIHA',
+  'PONCE GOMEZ DULCE YESENIA',
+  'RIOS LARA EMILY ARLETT',
+  'RODRIGUEZ ROMERO DIANA ISABEL',
+  'ROGEL ALONSO DANNA',
+  'ROMAN JIMENEZ NURIA NAOMI',
+  'ROMAN VELAZQUEZ KEYLLY BELEN',
+  'SANCHEZ ACEVEDO KIMBERLY HINATA',
+  'SANTANA RABADAN LUIS ANTONIO',
+  'SOTELO BARRAGAN CAMILA',
+  'TREJO VARGAS JOSE MIGUEL',
+];
+
+function normalizeStr(s){
+  return s.trim().toUpperCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'');
+}
+
+function verifyAccess(){
+  const input = document.getElementById('accessInput');
+  const btn   = document.getElementById('accessBtn');
+  const err   = document.getElementById('accessError');
+  const raw   = input.value.trim();
+  const norm  = normalizeStr(raw);
+  const isMaster = norm === normalizeStr(MASTER_KEY);
+
+  // Check against student list
+  const match = isMaster || studentList.some(n => normalizeStr(n) === norm);
+
+  if(!match){
+    err.classList.add('show');
+    input.disabled = true;
+    btn.disabled   = true;
+    return;
+  }
+
+  // Check single attempt (master key bypasses)
+  if(!isMaster && examUsed){
+    err.textContent = '⏹ Ya presentaste este examen en esta sesión. Solo se permite un intento.';
+    err.classList.add('show');
+    input.disabled = true;
+    btn.disabled   = true;
+    return;
+  }
+
+  // ✅ Access granted
+  activeStudent = raw;
+  sessionVerified = !isMaster; // master key doesn't "consume" the slot
+  document.getElementById('examAccess').style.display = 'none';
+  document.getElementById('examContent').style.display = 'block';
+  initExam();
+}
+
+function initExam(){
+  examStep=0; examScore=0; examAnswered=false;
+  renderExam();
+}
+
+function renderExam(){
+  const card = document.getElementById('examCard');
+  if(examStep >= questions.length){
+    // Mark attempt used (master key exempt)
+    if(normalizeStr(activeStudent) !== normalizeStr(MASTER_KEY)) examUsed = true;
+    const score10 = examScore;
+    const pct = Math.round((examScore/questions.length)*100);
+    const xp = examScore * 200;
+    addXP(xp,'examen');
+    let emoji, badge, badgeColor;
+    if(score10 >= 9){emoji='🏆'; badge='Excelente'; badgeColor='#22c55e';}
+    else if(score10 >= 7){emoji='🎓'; badge='Aprobado'; badgeColor='var(--accent)';}
+    else if(score10 >= 6){emoji='📚'; badge='Suficiente'; badgeColor='var(--amber)';}
+    else{emoji='📖'; badge='No acreditado'; badgeColor='var(--red)';}
+    card.innerHTML=`<div class="result-card">
+      <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.25rem;">${emoji}</div>
+      <div style="font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:${badgeColor};margin-bottom:.75rem;">${badge}</div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:4rem;font-weight:800;line-height:1;margin-bottom:.3rem;">${score10}<span style="font-size:1.5rem;color:var(--text2)">/10</span></div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:.25rem;">Estudiante: <strong style="color:var(--text)">${activeStudent}</strong></div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:2rem;font-family:'JetBrains Mono',monospace;">${new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})}</div>
+      <div style="display:flex;gap:.75rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap;">
+        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:.75rem 1.25rem;font-size:.8rem;font-weight:700;">🎯 ${examScore}/10 respuestas</div>
+        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-xl);padding:.75rem 1.25rem;font-size:.8rem;font-weight:700;">⚡ +${xp} XP ganados</div>
+      </div>
+      <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="showTabBtn('glosario')">📖 Estudiar glosario</button>
+      </div>
+      <div style="margin-top:1.5rem;font-size:.65rem;color:var(--text3);border-top:1px solid var(--border);padding-top:1rem;">
+        Validado · NOM-007-SSA3-2011 · SGC-LVA-2026
+      </div>
+    </div>`;
+    return;
+  }
+  const q   = questions[examStep];
+  const pct = Math.round((examStep/questions.length)*100);
+  const isClinical = q.q.startsWith('CASO CLÍNICO');
+  card.innerHTML=`
+    <div class="exam-meta">
+      <span class="exam-tag" style="${isClinical?'background:rgba(168,85,247,.15);color:#c084fc;':''}">${isClinical?'🩺 Caso Clínico':'Certificación LVA-2026'}</span>
+      <span class="exam-count">Pregunta ${examStep+1} de ${questions.length}</span>
+    </div>
+    <div class="exam-prog"><div class="exam-fill" style="width:${pct}%"></div></div>
+    <div class="exam-q" style="${isClinical?'font-size:1rem;line-height:1.6;':''}">
+      ${isClinical ? q.q.replace('CASO CLÍNICO 1 — ','').replace('CASO CLÍNICO 2 — ','').replace('CASO CLÍNICO 3 — ','') : q.q}
+    </div>
+    <div class="exam-opts" id="examOpts">
+      ${q.opts.map((o,i)=>`<button class="exam-opt" id="opt_${i}" onclick="answer(${o.c},${i})">
+        <span class="opt-letter">${String.fromCharCode(65+i)}</span>${o.t}
+      </button>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:1.25rem;">
+      <button class="btn btn-primary exam-next" id="examNext" onclick="nextQ()" style="display:none;">
+        ${examStep===questions.length-1?'Ver Resultados':'Siguiente →'}
+      </button>
+    </div>`;
+}
+
+function answer(correct, idx){
+  if(examAnswered) return;
+  examAnswered = true;
+  if(correct) examScore++;
+  // Blind mode: just dim all options, highlight selected as "answered" (neutral)
+  document.querySelectorAll('.exam-opt').forEach((o,i)=>{
+    o.style.pointerEvents = 'none';
+    if(i===idx){
+      o.style.borderColor = 'var(--accent)';
+      o.style.background  = 'rgba(79,110,247,.1)';
+      o.querySelector('.opt-letter').style.background = 'rgba(79,110,247,.2)';
+      o.querySelector('.opt-letter').style.color = 'var(--accent)';
+    } else {
+      o.style.opacity = '.35';
+    }
+  });
+  document.getElementById('examNext').style.display = 'flex';
+}
+
+function nextQ(){examStep++;examAnswered=false;renderExam()}
+function skipQ(){examStep++;examAnswered=false;renderExam()}
+
+// ── CERTIFICADO ──
+function emitirCertificado(){
+  const p=document.getElementById('rPaciente').value||'N/A';
+  const f=document.getElementById('rFecha').value;
+  const c=document.getElementById('rColor').value;
+  const a=document.getElementById('rAspecto').value;
+  const o=document.getElementById('rOlor').value;
+  const e=document.getElementById('rEspuma').value;
+  const glu=document.getElementById('rGlucosa').value;
+  const prot=document.getElementById('rProteinas').value;
+  const leuc=document.getElementById('rLeucocitos').value;
+  const nitr=document.getElementById('rNitritos').value;
+  const bili=document.getElementById('rBilirrubina').value;
+  const urob=document.getElementById('rUrobilinogeno').value;
+  const sang=document.getElementById('rSangre').value;
+  const ceto=document.getElementById('rCetonas').value;
+  const dens=document.getElementById('rDensidad').value;
+  const q=document.getElementById('rQuimico').value||'Sin observaciones adicionales';
+  document.getElementById('modalContent').textContent=
+`CERTIFICADO DE RESULTADOS — LABORATORIO ÁLVAREZ
+══════════════════════════════════════════════════
+PACIENTE  : ${p}
+FECHA     : ${f}
+
+EXAMEN FÍSICO (MACROSCÓPICO):
+  ► Color    : ${c}
+  ► Aspecto  : ${a}
+  ► Olor     : ${o}
+  ► Espuma   : ${e}
+
+EVALUACIÓN QUÍMICA SPINREACT:
+  ► Glucosa        : ${glu}
+  ► Proteínas      : ${prot}
+  ► Leucocitos     : ${leuc}
+  ► Nitritos       : ${nitr}
+  ► Bilirrubina    : ${bili}
+  ► Urobilinógeno  : ${urob}
+  ► Sangre         : ${sang}
+  ► Cetonas        : ${ceto}
+  ► Densidad       : ${dens}
+
+OBSERVACIONES ADICIONALES:
+  ${q}
+
+──────────────────────────────────────────────────
+Validado bajo norma NOM-007-SSA3-2011.
+Laboratorio Virtual Álvarez — SGC-LVA-2026`;
+  document.getElementById('modal').style.display='flex';
+  addXP(250,'reporte');
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
+
+// ── XP & NOTIFICATION ENGINE ──
+let totalXP = 0;
+let simXpAwarded = false;
+const xpSources = { examen: false, reporte: false, simulador: false };
+const XP_MAX = 1500;
+const notifQueue = [];
+
+function addXP(amount, source) {
+  if(source && xpSources[source]) return; // prevent double-award per session
+  if(source) xpSources[source] = true;
+  totalXP = Math.min(totalXP + amount, XP_MAX);
+  updateXPBar();
+  pushNotif(source, amount);
+}
+
+function updateXPBar() {
+  const pct = Math.min((totalXP / XP_MAX) * 100, 100);
+  document.getElementById('xpFill').style.width = pct + '%';
+  document.getElementById('xpDisplay').textContent = totalXP.toLocaleString('es-MX');
+  // Level logic: 0-500=1, 501-1000=2, 1001-1499=3, 1500=4
+  const lvl = totalXP >= 1500 ? 4 : totalXP >= 1000 ? 3 : totalXP >= 500 ? 2 : 1;
+  document.getElementById('xpLevel').textContent = 'Nivel ' + lvl;
+}
+
+const notifMessages = {
+  examen:    {icon:'🎓', title:'Examen completado', text:'¡Ganaste XP por tu evaluación diagnóstica!'},
+  reporte:   {icon:'📄', title:'Reporte generado', text:'Certificado LVA 2026 emitido correctamente.'},
+  simulador: {icon:'🧪', title:'Simulación completada', text:'¡Tira reactiva analizada! +250 XP ganados.'},
+};
+
+function pushNotif(source, amount) {
+  const m = notifMessages[source] || {icon:'⚡', title:'XP ganados', text:`+${amount} XP`};
+  const now = new Date();
+  const time = now.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'});
+  notifQueue.unshift({...m, amount, time, unread:true});
+  // Update dot
+  document.querySelector('.notif-dot').style.display = 'block';
+  renderNotifList();
+}
+
+function renderNotifList() {
+  const list = document.getElementById('notifList');
+  if(!notifQueue.length){
+    list.innerHTML = '<div class="notif-empty">Sin notificaciones nuevas</div>';
+    return;
+  }
+  list.innerHTML = notifQueue.map((n,i) => `
+    <div class="notif-item ${n.unread?'unread':''}" onclick="markRead(${i})">
+      <div class="notif-icon" style="background:var(--surface3)">${n.icon}</div>
+      <div>
+        <div class="notif-text"><strong>${n.title}</strong>${n.text}</div>
+        <div class="notif-time">+${n.amount} XP · ${n.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function markRead(i){ notifQueue[i].unread=false; renderNotifList(); }
+
+function clearNotifs(){
+  notifQueue.forEach(n=>n.unread=false);
+  document.querySelector('.notif-dot').style.display='none';
+  renderNotifList();
+}
+
+function toggleNotif(){
+  const panel = document.getElementById('notifPanel');
+  panel.classList.toggle('open');
+  // Close when clicking outside
+  if(panel.classList.contains('open')){
+    setTimeout(()=>document.addEventListener('click', function handler(e){
+      if(!panel.contains(e.target)&&e.target.id!=='notifBtn'){
+        panel.classList.remove('open');
+        document.removeEventListener('click',handler);
+      }
+    }),50);
+  }
+}
+
+// ── PDF DOWNLOAD ──
+function downloadPDF() {
+  const content = document.getElementById('modalContent').textContent;
+  const title = 'Certificado_LVA_2026_' + new Date().toISOString().split('T')[0];
+  // Build minimal printable HTML page
+  const pdfHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>${title}</title>
+<style>
+  body{font-family:'Courier New',monospace;font-size:12px;line-height:1.8;padding:2cm;color:#000;background:#fff}
+  pre{white-space:pre-wrap;word-wrap:break-word}
+  h1{font-family:Arial,sans-serif;font-size:16px;margin-bottom:1em;border-bottom:2px solid #000;padding-bottom:.5em}
+  .footer{margin-top:2em;font-size:10px;color:#555;border-top:1px solid #ccc;padding-top:.5em}
+
+/* ── EXAM ACCESS SCREEN ── */
+.access-screen{
+  min-height:calc(100vh - 4rem);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeUp .4s ease;
+}
+.access-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r-3xl);padding:3rem 2.5rem;
+  max-width:440px;width:100%;text-align:center;
+  box-shadow:0 0 60px rgba(79,110,247,.12);
+  position:relative;overflow:hidden;
+}
+.access-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(79,110,247,.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+.access-logo{
+  width:5rem;height:5rem;border-radius:50%;
+  background:linear-gradient(135deg,#1a0533,#0d1b4b);
+  border:2px solid rgba(79,110,247,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1.5rem;
+  box-shadow:0 0 30px rgba(79,110,247,.2);
+}
+.access-inst{font-size:.55rem;font-weight:800;letter-spacing:.3em;color:var(--accent);text-transform:uppercase;margin-bottom:.3rem}
+.access-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:.3rem}
+.access-sub{font-size:.75rem;color:var(--text2);margin-bottom:2rem;line-height:1.5}
+.access-divider{height:1px;background:var(--border);margin:1.5rem 0}
+.access-input{
+  width:100%;padding:.9rem 1.1rem;
+  background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r-lg);font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;color:var(--text);outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  text-align:center;letter-spacing:.02em;
+}
+.access-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+.access-input:disabled{opacity:.4;cursor:not-allowed}
+.access-btn{
+  width:100%;margin-top:1rem;padding:1rem;
+  background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;
+  border:none;border-radius:var(--r-lg);font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;font-weight:700;cursor:pointer;
+  transition:opacity .2s,transform .2s;
+  box-shadow:0 4px 20px rgba(79,110,247,.3);
+}
+.access-btn:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
+.access-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.access-error{
+  margin-top:.9rem;padding:.75rem 1rem;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+  border-radius:var(--r-lg);font-size:.78rem;color:#fca5a5;
+  display:none;line-height:1.5;
+}
+.access-error.show{display:block;animation:fadeUp .3s ease}
+.access-info{margin-top:1.25rem;font-size:.65rem;color:var(--text3);line-height:1.6}
+</style></head><body>
+<h1>📄 Laboratorio Virtual Álvarez — SGC-LVA-2026</h1>
+<pre>${content}</pre>
+<div class="footer">Documento generado el ${new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})} | Uso exclusivo docencia | NOM-007-SSA3-2011</div>
+</body></html>`;
+  const blob = new Blob([pdfHTML], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = title + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  // Also open print dialog for actual PDF save
+  const win = window.open('','_blank','width=800,height=600');
+  if(win){
+    win.document.write(pdfHTML);
+    win.document.close();
+    setTimeout(()=>win.print(), 500);
+  }
+}
+
+// Init
+updateSim();
+renderGlosario();
+renderNotifList();
+</script>
+</body>
+</html>
